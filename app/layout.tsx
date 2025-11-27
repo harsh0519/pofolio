@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import CustomCursor from "@/components/common/CustomCursor";
+import CursorProvider from "@/components/common/CursorProvider";
 
 export const metadata: Metadata = {
   title: "Portfolio | Modern Developer",
@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="antialiased custom-cursor">
-        <CustomCursor />
+        <CursorProvider />
         {children}
       </body>
     </html>

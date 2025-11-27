@@ -176,7 +176,7 @@ export default function HeroSection() {
 
         {/* Floating Particles */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(8)].map((_, i) => (
+          {isLoaded && [...Array(8)].map((_, i) => (
             <motion.div
               key={i}
               ref={(el) => {
@@ -186,8 +186,8 @@ export default function HeroSection() {
               style={{ background: 'var(--accent-primary)' }}
               initial={{
                 opacity: Math.random() * 0.4 + 0.1,
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
+                x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+                y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
               }}
               animate={{
                 opacity: [Math.random() * 0.2, Math.random() * 0.6, Math.random() * 0.2],
