@@ -18,41 +18,41 @@ const skillsData: SkillCategory[] = [
   {
     category: 'Frontend',
     skills: [
-      { name: 'React', level: 95, icon: '⚛️', color: 'from-cyan-500 to-blue-500' },
-      { name: 'Next.js', level: 90, icon: '▲', color: 'from-gray-700 to-gray-900' },
-      { name: 'TypeScript', level: 88, icon: 'TS', color: 'from-blue-600 to-blue-700' },
-      { name: 'Tailwind CSS', level: 92, icon: '🎨', color: 'from-cyan-400 to-teal-500' },
-      { name: 'Vue.js', level: 85, icon: 'V', color: 'from-green-500 to-emerald-600' },
+      { name: 'React', level: 95, icon: '⚛️', color: 'linear-gradient(135deg, var(--accent-primary), var(--accent-soft))' },
+      { name: 'Next.js', level: 90, icon: '▲', color: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))' },
+      { name: 'TypeScript', level: 88, icon: 'TS', color: 'linear-gradient(135deg, var(--accent-primary), rgba(34,211,238,0.7))' },
+      { name: 'Tailwind CSS', level: 92, icon: '🎨', color: 'linear-gradient(135deg, var(--accent-soft), var(--accent-primary))' },
+      { name: 'Vue.js', level: 85, icon: 'V', color: 'linear-gradient(135deg, rgba(34,197,94,0.9), rgba(16,185,129,0.85))' },
     ],
   },
   {
     category: 'Backend',
     skills: [
-      { name: 'Node.js', level: 90, icon: '🟢', color: 'from-green-600 to-green-700' },
-      { name: 'Python', level: 85, icon: '🐍', color: 'from-blue-500 to-yellow-400' },
-      { name: 'PostgreSQL', level: 82, icon: '🐘', color: 'from-blue-600 to-indigo-700' },
-      { name: 'MongoDB', level: 88, icon: '🍃', color: 'from-green-500 to-green-600' },
-      { name: 'Redis', level: 80, icon: '⚡', color: 'from-red-500 to-red-600' },
+      { name: 'Node.js', level: 90, icon: '🟢', color: 'linear-gradient(135deg, rgba(99,102,241,0.9), rgba(79,70,229,0.85))' },
+      { name: 'Python', level: 85, icon: '🐍', color: 'linear-gradient(135deg, var(--accent-primary), var(--accent-highlight))' },
+      { name: 'PostgreSQL', level: 82, icon: '🐘', color: 'linear-gradient(135deg, var(--accent-primary), rgba(59,130,246,0.9))' },
+      { name: 'MongoDB', level: 88, icon: '🍃', color: 'linear-gradient(135deg, rgba(16,185,129,0.9), rgba(5,150,105,0.85))' },
+      { name: 'Redis', level: 80, icon: '⚡', color: 'linear-gradient(135deg, rgba(239,68,68,0.9), rgba(220,38,38,0.85))' },
     ],
   },
   {
     category: 'Tools & DevOps',
     skills: [
-      { name: 'Git', level: 93, icon: '📦', color: 'from-orange-500 to-red-500' },
-      { name: 'Docker', level: 85, icon: '🐳', color: 'from-blue-500 to-cyan-500' },
-      { name: 'AWS', level: 80, icon: '☁️', color: 'from-orange-400 to-yellow-500' },
-      { name: 'CI/CD', level: 82, icon: '🔄', color: 'from-purple-500 to-pink-500' },
-      { name: 'Linux', level: 87, icon: '🐧', color: 'from-yellow-400 to-orange-500' },
+      { name: 'Git', level: 93, icon: '📦', color: 'linear-gradient(135deg, var(--accent-highlight), rgba(245,158,11,0.9))' },
+      { name: 'Docker', level: 85, icon: '🐳', color: 'linear-gradient(135deg, rgba(59,130,246,0.9), var(--accent-primary))' },
+      { name: 'AWS', level: 80, icon: '☁️', color: 'linear-gradient(135deg, var(--accent-highlight), rgba(245,158,11,0.8))' },
+      { name: 'CI/CD', level: 82, icon: '🔄', color: 'linear-gradient(135deg, var(--accent-primary), var(--accent-soft))' },
+      { name: 'Linux', level: 87, icon: '🐧', color: 'linear-gradient(135deg, rgba(250,204,21,0.9), rgba(245,158,11,0.85))' },
     ],
   },
   {
     category: 'Design & Other',
     skills: [
-      { name: 'Figma', level: 88, icon: '🎨', color: 'from-purple-500 to-pink-500' },
-      { name: 'UI/UX', level: 85, icon: '✨', color: 'from-indigo-500 to-purple-500' },
-      { name: 'GraphQL', level: 83, icon: '◈', color: 'from-pink-500 to-rose-500' },
-      { name: 'REST API', level: 90, icon: '🔌', color: 'from-blue-500 to-indigo-500' },
-      { name: 'Testing', level: 86, icon: '🧪', color: 'from-green-500 to-teal-500' },
+      { name: 'Figma', level: 88, icon: '🎨', color: 'linear-gradient(135deg, var(--accent-primary), var(--accent-soft))' },
+      { name: 'UI/UX', level: 85, icon: '✨', color: 'linear-gradient(135deg, rgba(14,165,132,0.9), var(--accent-primary))' },
+      { name: 'GraphQL', level: 83, icon: '◈', color: 'linear-gradient(135deg, rgba(236,72,153,0.9), rgba(244,63,94,0.85))' },
+      { name: 'REST API', level: 90, icon: '🔌', color: 'linear-gradient(135deg, var(--accent-primary), rgba(59,130,246,0.9))' },
+      { name: 'Testing', level: 86, icon: '🧪', color: 'linear-gradient(135deg, rgba(16,185,129,0.9), var(--accent-soft))' },
     ],
   },
 ];
@@ -71,7 +71,7 @@ export default function SkillsSection() {
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
             <span className="gradient-text">Skills & Expertise</span>
           </h2>
-          <p className="text-lg md:text-xl text-[var(--text-tertiary)] max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-(--text-tertiary) max-w-2xl mx-auto">
             Technologies and tools I use to bring ideas to life
           </p>
         </div>
@@ -83,10 +83,13 @@ export default function SkillsSection() {
               key={index}
               onClick={() => setActiveCategory(index)}
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
-                activeCategory === index
-                  ? 'bg-white text-black scale-105 glow-effect'
-                  : 'glass-effect text-[var(--text-secondary)] hover:scale-105 hover:border-[var(--accent-primary)]'
+                activeCategory === index ? 'scale-105 glow-effect' : 'glass-effect hover:scale-105'
               }`}
+              style={
+                activeCategory === index
+                  ? { background: 'var(--accent-primary)', color: 'var(--bg-primary)' }
+                  : { border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }
+              }
             >
               {category.category}
             </button>
@@ -113,7 +116,8 @@ export default function SkillsSection() {
             {skillsData.flatMap(cat => cat.skills).map((skill, index) => (
               <div
                 key={index}
-                className="glass-effect px-4 py-2 rounded-full text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--accent-primary)] hover:border-[var(--accent-primary)] transition-all duration-300 hover:scale-105"
+                className="glass-effect px-4 py-2 rounded-full text-sm font-medium text-(--text-secondary) transition-all duration-300 hover:scale-105"
+                style={{ border: '1px solid var(--border-color)' }}
               >
                 <span className="mr-2">{skill.icon}</span>
                 {skill.name}
@@ -131,22 +135,22 @@ function SkillCard({ skill, delay }: { skill: Skill; delay: number }) {
 
   return (
     <div
-      className="group glass-effect rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:border-[var(--accent-primary)] animate-fade-in-up"
-      style={{ animationDelay: `${delay}s`, opacity: 0 }}
+      className="group glass-effect rounded-xl p-6 transition-all duration-300 hover:scale-105 animate-fade-in-up"
+      style={{ animationDelay: `${delay}s`, opacity: 0, border: '1px solid var(--border-color)' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Skill Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${skill.color} flex items-center justify-center text-2xl font-bold text-white shadow-lg`}>
+          <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-2xl font-bold text-white shadow-lg`} style={{ background: skill.color }}>
             {skill.icon}
           </div>
           <div>
-            <h4 className="text-lg font-semibold text-[var(--text-primary)]">
+            <h4 className="text-lg font-semibold text-(--text-primary)">
               {skill.name}
             </h4>
-            <p className="text-sm text-[var(--text-tertiary)]">
+            <p className="text-sm text-(--text-tertiary)">
               {skill.level}% Proficiency
             </p>
           </div>
@@ -154,27 +158,28 @@ function SkillCard({ skill, delay }: { skill: Skill; delay: number }) {
       </div>
 
       {/* Progress Bar */}
-      <div className="relative h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
+      <div className="relative h-2 bg-(--bg-tertiary) rounded-full overflow-hidden">
         <div
-          className={`absolute inset-y-0 left-0 bg-gradient-to-r ${skill.color} rounded-full transition-all duration-1000 ease-out`}
+          className={`absolute inset-y-0 left-0 rounded-full transition-all duration-1000 ease-out`}
           style={{
             width: isHovered ? `${skill.level}%` : '0%',
+            background: skill.color,
           }}
         />
       </div>
 
       {/* Skill Level Indicator */}
       <div className="mt-4 flex gap-1">
-        {[...Array(5)].map((_, i) => (
-          <div
-            key={i}
-            className={`flex-1 h-1 rounded-full transition-all duration-300 ${
-              i < Math.floor(skill.level / 20)
-                ? `bg-gradient-to-r ${skill.color}`
-                : 'bg-[var(--bg-tertiary)]'
-            }`}
-          />
-        ))}
+        {[...Array(5)].map((_, i) => {
+          const filled = i < Math.floor(skill.level / 20);
+          return (
+            <div
+              key={i}
+              className={`flex-1 h-1 rounded-full transition-all duration-300 bg-(--bg-tertiary)`}
+              style={filled ? { background: skill.color } : undefined}
+            />
+          );
+        })}
       </div>
     </div>
   );

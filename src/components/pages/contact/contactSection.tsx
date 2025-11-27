@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import PremiumButton from '@/components/common/PremiumButton';
 
 interface ContactMethod {
   icon: string;
@@ -62,8 +63,14 @@ export default function ContactSection() {
     <section id="contact" className="relative py-20 px-6 overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 grid-background opacity-20" />
-      <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl" />
+      <div
+        className="absolute top-1/4 left-1/3 w-96 h-96 rounded-full blur-3xl"
+        style={{ background: 'radial-gradient(circle, rgba(0,229,255,0.06), transparent)', opacity: 0.5 }}
+      />
+      <div
+        className="absolute bottom-1/4 right-1/3 w-96 h-96 rounded-full blur-3xl"
+        style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.04), transparent)', opacity: 0.45 }}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section Header */}
@@ -71,7 +78,7 @@ export default function ContactSection() {
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
             <span className="gradient-text">Get In Touch</span>
           </h2>
-          <p className="text-lg md:text-xl text-[var(--text-tertiary)] max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-(--text-tertiary) max-w-2xl mx-auto">
             Have a project in mind? Let&apos;s work together to create something amazing
           </p>
         </div>
@@ -88,12 +95,12 @@ export default function ContactSection() {
                   className="flex items-center gap-4 glass-effect rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:border-[var(--accent-primary)] animate-fade-in-up"
                   style={{ animationDelay: `${index * 0.1}s`, opacity: 0 }}
                 >
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-400 flex items-center justify-center text-2xl shrink-0">
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl shrink-0" style={{ background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-soft))' }}>
                     {method.icon}
                   </div>
                   <div>
-                    <p className="text-sm text-[var(--text-tertiary)]">{method.label}</p>
-                    <p className="text-lg font-semibold text-[var(--text-primary)]">
+                    <p className="text-sm text-(--text-tertiary)">{method.label}</p>
+                    <p className="text-lg font-semibold text-(--text-primary)">
                       {method.value}
                     </p>
                   </div>
@@ -114,7 +121,8 @@ export default function ContactSection() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 bg-[var(--bg-tertiary)] rounded-lg text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-all duration-300 hover:scale-105"
+                    className="flex items-center gap-3 p-3 bg-(--bg-tertiary) rounded-lg text-(--text-secondary) transition-all duration-300 hover:scale-105"
+                    style={{ border: '1px solid var(--border-color)' }}
                   >
                     <SocialIcon icon={social.icon} />
                     <span className="font-medium">{social.name}</span>
@@ -132,7 +140,7 @@ export default function ContactSection() {
                 <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
                 <h3 className="text-xl font-bold gradient-text">Available for Work</h3>
               </div>
-              <p className="text-sm text-[var(--text-secondary)]">
+              <p className="text-sm text-(--text-secondary)">
                 I&apos;m currently available for freelance projects and full-time opportunities.
                 Let&apos;s discuss how I can help bring your ideas to life.
               </p>
@@ -148,7 +156,7 @@ export default function ContactSection() {
               <div>
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
+                  className="block text-sm font-medium text-(--text-secondary) mb-2"
                 >
                   Your Name
                 </label>
@@ -159,7 +167,8 @@ export default function ContactSection() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] transition-colors"
+                  className="w-full px-4 py-3 bg-(--bg-tertiary) border border-(--border-color) rounded-lg text-(--text-primary) focus:outline-none transition-colors"
+                  style={{ WebkitTextFillColor: 'unset' }}
                   placeholder="John Doe"
                 />
               </div>
@@ -167,7 +176,7 @@ export default function ContactSection() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
+                  className="block text-sm font-medium text-(--text-secondary) mb-2"
                 >
                   Email Address
                 </label>
@@ -178,7 +187,7 @@ export default function ContactSection() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] transition-colors"
+                  className="w-full px-4 py-3 bg-(--bg-tertiary) border border-(--border-color) rounded-lg text-(--text-primary) focus:outline-none transition-colors"
                   placeholder="john@example.com"
                 />
               </div>
@@ -186,7 +195,7 @@ export default function ContactSection() {
               <div>
                 <label
                   htmlFor="subject"
-                  className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
+                  className="block text-sm font-medium text-(--text-secondary) mb-2"
                 >
                   Subject
                 </label>
@@ -197,7 +206,7 @@ export default function ContactSection() {
                   value={formData.subject}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] transition-colors"
+                  className="w-full px-4 py-3 bg-(--bg-tertiary) border border-(--border-color) rounded-lg text-(--text-primary) focus:outline-none focus:border-(--accent-primary) transition-colors"
                   placeholder="Project Discussion"
                 />
               </div>
@@ -205,7 +214,7 @@ export default function ContactSection() {
               <div>
                 <label
                   htmlFor="message"
-                  className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
+                  className="block text-sm font-medium text-(--text-secondary) mb-2"
                 >
                   Message
                 </label>
@@ -216,17 +225,19 @@ export default function ContactSection() {
                   onChange={handleChange}
                   required
                   rows={6}
-                  className="w-full px-4 py-3 bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] transition-colors resize-none"
+                  className="w-full px-4 py-3 bg-(--bg-tertiary) border border-(--border-color) rounded-lg text-(--text-primary) focus:outline-none transition-colors resize-none"
                   placeholder="Tell me about your project..."
                 />
               </div>
 
-              <button
+              <PremiumButton
                 type="submit"
-                className="w-full px-8 py-4 bg-white text-black rounded-lg font-semibold transition-all duration-300 hover:scale-105 glow-effect"
+                variant="primary"
+                size="md"
+                className="w-full"
               >
                 Send Message
-              </button>
+              </PremiumButton>
             </form>
           </div>
         </div>

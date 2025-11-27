@@ -66,7 +66,10 @@ export default function AboutSection() {
     <section id="about" className="relative py-20 px-6 overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 grid-background opacity-20" />
-      <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl" />
+      <div
+        className="absolute top-1/3 right-1/4 w-96 h-96 rounded-full blur-3xl"
+        style={{ background: 'radial-gradient(circle at center, var(--glow-primary), transparent)', opacity: 0.12 }}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section Header */}
@@ -74,7 +77,7 @@ export default function AboutSection() {
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
             <span className="gradient-text">About Me</span>
           </h2>
-          <p className="text-lg md:text-xl text-[var(--text-tertiary)] max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-(--text-tertiary) max-w-2xl mx-auto">
             Passionate developer with a mission to create impactful digital experiences
           </p>
         </div>
@@ -84,14 +87,14 @@ export default function AboutSection() {
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="glass-effect rounded-xl p-6 text-center transition-all duration-300 hover:scale-105 hover:border-[var(--accent-primary)] animate-fade-in-up"
+              className="glass-effect rounded-xl p-6 text-center transition-all duration-300 hover:scale-105 hover:border-(--accent-primary) animate-fade-in-up"
               style={{ animationDelay: `${index * 0.1}s`, opacity: 0 }}
             >
               <div className="text-4xl mb-2">{stat.icon}</div>
               <div className="text-3xl md:text-4xl font-bold gradient-text mb-1">
                 {stat.value}
               </div>
-              <div className="text-sm text-[var(--text-tertiary)]">{stat.label}</div>
+              <div className="text-sm text-(--text-tertiary)">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -103,7 +106,7 @@ export default function AboutSection() {
             <h3 className="text-2xl md:text-3xl font-bold gradient-text">
               Who Am I?
             </h3>
-            <div className="space-y-4 text-[var(--text-secondary)]">
+            <div className="space-y-4 text-(--text-secondary)">
               <p>
                 I&apos;m a passionate full-stack developer with over 5 years of experience
                 building web applications that solve real-world problems. I love turning
@@ -124,7 +127,8 @@ export default function AboutSection() {
             {/* Download Resume */}
             <a
               href="#"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black rounded-lg font-semibold transition-all duration-300 hover:scale-105 glow-effect"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 glow-effect"
+                style={{ background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-soft))', color: 'var(--bg-primary)' }}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -136,8 +140,8 @@ export default function AboutSection() {
           {/* Profile Image Placeholder */}
           <div className="flex items-center justify-center">
             <div className="relative">
-              <div className="w-80 h-80 rounded-2xl bg-gradient-to-br from-white to-gray-400 p-1 animate-float">
-                <div className="w-full h-full rounded-2xl bg-[var(--bg-secondary)] flex items-center justify-center text-8xl">
+              <div className="w-80 h-80 rounded-2xl p-1 animate-float" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))' }}>
+                <div className="w-full h-full rounded-2xl bg-(--bg-surface) flex items-center justify-center text-8xl">
                   👨‍💻
                 </div>
               </div>
@@ -159,7 +163,7 @@ export default function AboutSection() {
           </h3>
           <div className="relative">
             {/* Timeline Line */}
-            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-white via-gray-400 to-gray-600" />
+            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5" style={{ background: 'linear-gradient(to bottom, var(--border-color), rgba(255,255,255,0.02))' }} />
 
             {/* Timeline Items */}
             <div className="space-y-12">
@@ -171,27 +175,27 @@ export default function AboutSection() {
                   }`}
                 >
                   {/* Timeline Dot */}
-                  <div className="absolute left-8 md:left-1/2 w-4 h-4 -ml-2 rounded-full bg-white glow-effect" />
+                  <div className="absolute left-8 md:left-1/2 w-4 h-4 -ml-2 rounded-full bg-(--accent-primary) glow-effect" />
 
                   {/* Content */}
                   <div className={`w-full md:w-5/12 ${index % 2 === 0 ? 'md:pr-12' : 'md:pl-12'} pl-20 md:pl-0`}>
                     <div
-                      className="glass-effect rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:border-[var(--accent-primary)] animate-fade-in-up"
+                      className="glass-effect rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:border-(--accent-primary) animate-fade-in-up"
                       style={{ animationDelay: `${index * 0.2}s`, opacity: 0 }}
                     >
                       <div className="flex items-center gap-3 mb-3">
                         <span className="text-3xl">{exp.icon}</span>
                         <div>
-                          <h4 className="text-lg font-bold text-[var(--text-primary)]">
+                          <h4 className="text-lg font-bold text-(--text-primary)">
                             {exp.title}
                           </h4>
-                          <p className="text-sm font-semibold text-[var(--accent-primary)]">
+                          <p className="text-sm font-semibold text-(--accent-primary)">
                             {exp.company}
                           </p>
                         </div>
                       </div>
-                      <p className="text-sm text-[var(--text-tertiary)] mb-3">{exp.period}</p>
-                      <p className="text-sm text-[var(--text-secondary)]">{exp.description}</p>
+                      <p className="text-sm text-(--text-tertiary) mb-3">{exp.period}</p>
+                      <p className="text-sm text-(--text-secondary)">{exp.description}</p>
                     </div>
                   </div>
                 </div>
@@ -209,21 +213,21 @@ export default function AboutSection() {
             {education.map((edu, index) => (
               <div
                 key={index}
-                className="glass-effect rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:border-[var(--accent-primary)] animate-fade-in-up"
+                className="glass-effect rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:border-(--accent-primary) animate-fade-in-up"
                 style={{ animationDelay: `${index * 0.2}s`, opacity: 0 }}
               >
                 <div className="flex items-center gap-4 mb-3">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-400 flex items-center justify-center text-2xl">
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))' }}>
                     {edu.icon}
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-[var(--text-primary)]">
+                    <h4 className="text-lg font-bold text-(--text-primary)">
                       {edu.degree}
                     </h4>
-                    <p className="text-sm text-[var(--text-tertiary)]">{edu.period}</p>
+                    <p className="text-sm text-(--text-tertiary)">{edu.period}</p>
                   </div>
                 </div>
-                <p className="text-sm font-semibold text-[var(--accent-primary)]">
+                <p className="text-sm font-semibold text-(--accent-primary)">
                   {edu.school}
                 </p>
               </div>
