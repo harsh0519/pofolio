@@ -1,30 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  /* Palette B — Cyan + Warm Highlight */
-  --bg-primary: #070707; /* page background */
-  --bg-surface: #0f0f10; /* panels / cards */
-  --bg-tertiary: #0b0b0c;
+  /* Theme variables (customized per user request)
+     - Background: pure black
+     - Button text: white
+     - Buttons: light purple
+     - Keep purple (#8B5CF6) and yellow (#FCD34D) for 3D/accents
+  */
 
-  /* Accent Colors */
-  --accent-primary: #00E5FF; /* bright cyan */
-  --accent-highlight: #F59E0B; /* warm amber for CTAs */
-  --accent-soft: #22D3EE; /* softer cyan */
-  --accent-muted: #88F0FF;
+  /* Backgrounds - Premium Modern Black & White */
+  --bg-primary: #000000; /* pure black background */
+  --bg-surface: #0A0A0A; /* slightly lighter surface */
+  --bg-tertiary: #0F0F10; /* card/panel backgrounds */
+
+  /* Accent Colors - ONLY for 3D scene (purple & gold reserved) */
+  --3d-primary: #8B5CF6; /* vibrant purple (3D object only) */
+  --3d-secondary: #A78BFA; /* light purple (3D only) */
+  --3d-highlight: #FCD34D; /* gold/yellow (3D only) */
+  
+  /* Main Accent - White for premium modern look */
+  --accent-primary: #FFFFFF; /* white accents (primary CTA buttons) */
+  --accent-secondary: #E5E7EB; /* light gray secondary */
+  --accent-highlight: #FFFFFF; /* white highlights */
+  --accent-soft: #C4B5FD; /* light purple (use sparingly for subtle accents) */
+  --accent-muted: #9CA3AF; /* medium gray for muted text */
+
+  /* Button-specific */
+  --button-bg: #FFFFFF; /* white buttons - premium look */
+  --button-text: #000000; /* black text on white buttons for contrast */
 
   /* Text Colors */
   --text-primary: #FFFFFF;
-  --text-secondary: #cbd5e1;
-  --text-tertiary: #9ca3af;
+  --text-secondary: #E5E7EB;
+  --text-tertiary: #9CA3AF;
 
-  /* Border & Glow */
-  --border-color: rgba(255, 255, 255, 0.06);
-  --glow-primary: rgba(0, 229, 255, 0.16);
-  --glow-highlight: rgba(245, 158, 11, 0.12);
+  /* Border & Glow - white/subtle for premium look */
+  --border-color: rgba(255, 255, 255, 0.15);
+  --glow-primary: rgba(255, 255, 255, 0.15);
+  --glow-highlight: rgba(255, 255, 255, 0.1);
 
-  /* Gradients */
-  --gradient-accent: linear-gradient(90deg, var(--accent-primary), var(--accent-soft));
-  --gradient-highlight: linear-gradient(90deg, var(--accent-highlight), var(--accent-primary));
+  /* Gradients - white/subtle for premium, keep 3D for purple/gold */
+  --gradient-accent: linear-gradient(90deg, #FFFFFF, #E5E7EB);
+  --gradient-highlight: linear-gradient(90deg, #FFFFFF, #F3F4F6);
+  --gradient-purple: linear-gradient(135deg, #8B5CF6, #A78BFA);
+  --gradient-gold: linear-gradient(135deg, #FCD34D, #FDE68A);
 }
 
 * {
@@ -46,27 +65,27 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-/* Scrollbar Styling */
+/* Scrollbar Styling - Red Theme */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: #000000;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--accent-primary);
+  background: var(--button-bg);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-secondary);
+  background: var(--accent-primary);
 }
 
 /* Selection Styling */
 ::selection {
-  background: var(--accent-primary);
+  background: var(--button-bg);
   color: var(--bg-primary);
 }
 
@@ -162,6 +181,32 @@ body {
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+/* Theme button helper (premium white buttons with black text)
+   - Background: white (#FFFFFF)
+   - Text: black (#000000)
+   - Hover: subtle gray with shadow
+*/
+.theme-button {
+  background: var(--button-bg);
+  color: var(--button-text);
+  padding: 0.6rem 1.4rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border: 1px solid transparent;
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+.theme-button:hover {
+  background: #F3F4F6;
+  color: var(--button-text);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
 }
 
 /* Glass Effect */
@@ -346,6 +391,19 @@ body {
   animation: blurIn 0.8s ease-out forwards;
 }
 
+@keyframes blink {
+  0%, 49%, 100% {
+    opacity: 1;
+  }
+  50%, 99% {
+    opacity: 0;
+  }
+}
+
+.animate-blink {
+  animation: blink 1.2s infinite;
+}
+
 @keyframes slideInUp {
   from {
     opacity: 0;
@@ -449,10 +507,32 @@ body {
 
 /* Smooth scroll behavior */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto; /* Let Lenis handle smooth scroll */
 }
 
 /* Prevent layout shift */
 body {
   overflow-x: hidden;
+}
+
+/* Performance optimizations */
+.parallax-content,
+.work-card,
+.project-card {
+  will-change: transform;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
 }
