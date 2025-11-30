@@ -39,5 +39,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-nul
-src/components/3d/
+
