@@ -17,6 +17,8 @@ export default function CustomCursor() {
   const posRef = useRef({ x: -100, y: -100 });       // actual mouse
   const renderRef = useRef({ x: -100, y: -100 });    // rendered (smoothed)
   const rafRef = useRef<number | null>(null);
+  const labelStateRef = useRef<string | null>(null);
+  const clickRef = useRef(false);
 
   // quick config (tweak numbers)
   const config = {
@@ -79,22 +81,33 @@ export default function CustomCursor() {
       setTimeout(() => ripple.remove(), config.rippleDuration + 50);
     };
 
+    // keep refs in sync with state so the render loop can read latest values
+    labelStateRef.current = label;
+    clickRef.current = isClicking;
+
     // hover label logic (pointerover/pointerout)
     const onPointerOver = (e: Event) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
       const found = target.closest('[data-cursor="interactive"], a, button, [role="button"]') as HTMLElement | null;
       if (found) {
-        const txt = found.getAttribute('data-cursor-label') ?? (found.tagName.toLowerCase() === 'a' ? 'Open' : 'Click');
+        const attr = found.getAttribute('data-cursor-label');
+        const hasAttr = typeof attr === 'string' && attr.trim().length > 0;
+        const tag = (found.tagName || '').toLowerCase();
+        const txt = hasAttr ? attr!.trim() : (tag === 'a' ? 'Open' : 'Click');
         setLabel(txt);
       }
     };
+
     const onPointerOut = (e: Event) => {
-      // if pointer moved outside interactive elements, clear label
-      const target = e.target as HTMLElement | null;
-      if (!target) { setLabel(null); return; }
-      const still = (document.activeElement && (document.activeElement as HTMLElement).closest && (document.activeElement as HTMLElement).closest('[data-cursor="interactive"], a, button, [role="button"]'));
-      if (!still) setLabel(null);
+      // Use relatedTarget (where pointer moved to). If it's still inside an interactive element, keep the label.
+      const related = (e as PointerEvent).relatedTarget as HTMLElement | null;
+      if (related) {
+        const still = related.closest && related.closest('[data-cursor="interactive"], a, button, [role="button"]');
+        if (still) return; // pointer moved to another interactive element
+      }
+      // otherwise clear
+      setLabel(null);
     };
 
     // render loop
@@ -111,7 +124,7 @@ export default function CustomCursor() {
         dotRef.current.style.transform = `translate3d(${rx - config.dotSize / 2}px, ${ry - config.dotSize / 2}px, 0)`;
       }
       if (ringRef.current) {
-        const ringSize = label ? config.ringHoverSize : (isClicking ? config.ringSize * config.clickShrink : config.ringSize);
+        const ringSize = labelStateRef.current ? config.ringHoverSize : (clickRef.current ? config.ringSize * config.clickShrink : config.ringSize);
         const offset = ringSize / 2;
         ringRef.current.style.width = `${ringSize}px`;
         ringRef.current.style.height = `${ringSize}px`;
@@ -121,8 +134,10 @@ export default function CustomCursor() {
         // position label to the right of ring
         labelRef.current.style.left = `${rx + (config.ringSize)}px`;
         labelRef.current.style.top = `${ry - 12}px`;
-        labelRef.current.style.opacity = label ? '1' : '0';
-        labelRef.current.style.transform = label ? 'translateY(0)' : 'translateY(-6px)';
+        const currentLabel = labelStateRef.current;
+        labelRef.current.style.opacity = currentLabel ? '1' : '0';
+        labelRef.current.style.transform = currentLabel ? 'translateY(0)' : 'translateY(-6px)';
+        labelRef.current.textContent = currentLabel ?? '';
       }
 
       rafRef.current = requestAnimationFrame(loop);

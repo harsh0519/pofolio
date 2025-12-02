@@ -7,7 +7,7 @@ import PageTransation from "@/components/common/PageTransition";
 import LoadingScreen from "@/components/common/LoadingScreen";
 
 export const metadata: Metadata = {
-  title: "Award-Winning Portfolio | Creative Developer",
+  title: "Harsh Kumar - Web Developer & 3D Enthusiast",
   description: "Immersive portfolio showcasing cutting-edge web development with 3D animations, GSAP, and modern design",
 };
 

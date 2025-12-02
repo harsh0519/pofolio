@@ -20,7 +20,7 @@ const timeline = [
   {
     year: '2024',
     title: 'Senior Creative Developer',
-    company: 'Award-Winning Agency',
+    company: ' Agency',
     description: 'Leading frontend development for high-profile clients',
   },
   {

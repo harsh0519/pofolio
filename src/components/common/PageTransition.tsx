@@ -42,7 +42,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
       {/* Transition overlay */}
       <div
         ref={overlayRef}
-        className="fixed inset-0 z-50 bg-gradient-to-br from-black via-gray-900 to-black pointer-events-none"
+        className="fixed inset-0 z-50  from-black via-gray-900 to-black pointer-events-none"
         style={{ transform: 'scaleY(0)' } as React.CSSProperties}
       />
 

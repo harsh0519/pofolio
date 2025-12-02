@@ -66,12 +66,12 @@ export default function LoadingScreen() {
   return (
     <div
       ref={loaderRef}
-      className="fixed inset-0 z-[9999] bg-black flex items-center justify-center"
+      className="fixed inset-0 z-50 bg-black flex items-center justify-center"
     >
       {/* Minimal background */}
       <div className="absolute inset-0 bg-linear-to-b from-black via-black to-black/80" />
 
-      <div className="relative z-10 text-center">
+      <div className="relative z-50 text-center">
         {/* Loading Percentage Counter */}
         <div
           ref={counterRef}

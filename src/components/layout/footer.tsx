@@ -28,7 +28,7 @@ export default function Footer() {
           <div>
             <h3 className="text-2xl font-bold text-white mb-4">Portfolio</h3>
             <p className="text-sm text-gray-400 mb-4">
-              Building award-winning digital experiences.
+              Building  digital experiences.
             </p>
             <div className="flex gap-4">
               {/* GitHub Icon */}

@@ -23,13 +23,16 @@ export default function Home() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Hero title animation with enhanced effect
+      // Hero title animation with enhanced effect (apply only to main text to avoid splitting glitch layers)
       if (titleRef.current) {
-        splitTextReveal(titleRef.current, {
-          type: 'chars',
-          stagger: 0.05,
-          delay: 0.5,
-        });
+        const mainText = titleRef.current.querySelector<HTMLElement>('#txt');
+        if (mainText) {
+          splitTextReveal(mainText, {
+            type: 'chars',
+            stagger: 0.05,
+            delay: 0.5,
+          });
+        }
       }
 
       // Subtitle fade in with blur
@@ -56,6 +59,67 @@ export default function Home() {
           duration: 1,
           ease: 'power4.out',
         });
+      }
+
+      // Glitch hero effect (replicates provided Timeline sequence)
+      if (heroRef.current) {
+        const heroEl = heroRef.current as HTMLElement;
+        const glitchEls = Array.from(heroEl.querySelectorAll<HTMLElement>('.glitch'));
+        const top = heroEl.querySelector<HTMLElement>('.top');
+        const bottom = heroEl.querySelector<HTMLElement>('.bottom');
+        const mainTxt = heroEl.querySelector<HTMLElement>('#txt');
+
+        if ((glitchEls.length || top || bottom) && mainTxt) {
+          // Restore a full GSAP-style glitch similar to the original TimelineMax sequence.
+          const gTl = gsap.timeline({ repeat: -1, repeatDelay: 2 });
+
+          // Keep layers hidden except during the split moment to avoid layout shifts
+          gTl.set([top, bottom], { autoAlpha: 0, visibility: 'hidden' }, 0);
+
+          gTl.to([top, bottom], { duration: 0.1, skewX: 70, ease: 'power4.inOut' })
+            .to([top, bottom], { duration: 0.04, skewX: 0, ease: 'power4.inOut' })
+            .to([top, bottom], { duration: 0.04, autoAlpha: 0 })
+            .to([top, bottom], { duration: 0.04, autoAlpha: 1 })
+            .to([top, bottom], { duration: 0.04, x: -12 })
+            .to([top, bottom], { duration: 0.04, x: 0 })
+
+            .add('split', 0)
+
+            // reveal layers at split (only visible during split), then animate split
+            .set([top, bottom], { autoAlpha: 1, visibility: 'visible' }, 'split')
+            // hint the browser these will be transformed (set will-change just for the split)
+            .set([top, bottom], { willChange: 'transform, opacity' }, 'split')
+            .to(top, { duration: 0.4, x: -30, ease: 'power4.inOut' }, 'split')
+            .to(bottom, { duration: 0.4, x: 30, ease: 'power4.inOut' }, 'split')
+            .call(() => {
+              top && top.classList.add('redShadow');
+              bottom && bottom.classList.add('redShadow');
+            }, undefined, 'split')
+
+            .to(mainTxt, { duration: 0, scale: 1.1 }, 'split')
+            .to(mainTxt, { duration: 0, scale: 1 }, 'split+=0.02')
+
+            .call(() => {
+              top && top.classList.remove('redShadow');
+              bottom && bottom.classList.remove('redShadow');
+            }, undefined, '+=0.09')
+            .call(() => {
+              top && top.classList.add('greenShadow');
+              bottom && bottom.classList.add('greenShadow');
+            }, undefined, 'split')
+            .call(() => {
+              top && top.classList.remove('greenShadow');
+              bottom && bottom.classList.remove('greenShadow');
+            }, undefined, 'split+=0.01')
+
+            // return to center and hide layers shortly after split finishes
+            .to([top, bottom], { duration: 0.2, x: 0, ease: 'power4.inOut' })
+            .to([top, bottom], { duration: 0.02, scaleY: 1.1, ease: 'power4.inOut' })
+            .to([top, bottom], { duration: 0.04, scaleY: 1, ease: 'power4.inOut' })
+            // clear will-change once finished to avoid constant composite layers
+            .set([top, bottom], { clearProps: 'willChange' }, '+=0')
+            .set([top, bottom], { autoAlpha: 0, visibility: 'hidden' }, '+=0.01');
+        }
       }
 
       // Parallax sections with enhanced movement
@@ -115,7 +179,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main ref={heroRef} className="bg-gradient-to-b from-[#0A0A0F] via-[#13131A] to-[#1C1C24]">
+    <main ref={heroRef} className=" from-[#0A0A0F] via-[#13131A] to-[#1C1C24]">
       {/* Hero Section with 3D Background */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* 3D Background */}
@@ -124,25 +188,25 @@ export default function Home() {
         </div>
 
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black pointer-events-none" />
+        <div className="absolute inset-0  from-transparent via-black/50 to-black pointer-events-none" />
 
         {/* Hero Content */}
         <div className="relative z-10 container mx-auto px-6 text-center">
           <div className="mb-8">
-            <h1
+            <div
               ref={titleRef}
-              className="text-7xl md:text-9xl font-bold mb-6 text-white"
-              style={{ perspective: '1000px' }}
+              className="text-7xl md:text-9xl font-bold mb-6 text-white block relative w-full"
+              style={{ perspective: '1000px', overflow: 'hidden', whiteSpace: 'nowrap', textAlign: 'center' }}
+              aria-hidden={false}
             >
-              Creative Developer
-            </h1>
-            <p
-              ref={subtitleRef}
-              className="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto mb-12"
-            >
-              Crafting digital experiences that blend innovation, artistry, and cutting-edge
-              technology
-            </p>
+              {/* Main text + two layered glitch copies (top / bottom) as inline spans to keep single-line */}
+              <span id="txt" className="inline-block">HARSH KUMAR MEHTA</span>
+
+              <div className="glitch-wrap absolute inset-0 pointer-events-none overflow-hidden">
+                <span className="glitch top inline-block">HARSH KUMAR MEHTA</span>
+                <span className="glitch bottom inline-block">HARSH KUMAR MEHTA</span>
+              </div>
+            </div>
           </div>
 
           {/* CTA Buttons */}
@@ -211,7 +275,7 @@ export default function Home() {
             </div>
 
             <div className="page-transition relative">
-              <div className="aspect-square bg-gradient-to-br from-white/5 to-white/0 rounded-3xl backdrop-blur-xl border border-white/10 flex items-center justify-center">
+              <div className="aspect-square r from-white/5 to-white/0 rounded-3xl backdrop-blur-xl border border-white/10 flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-6xl font-bold text-white mb-2">50+</div>
                   <div className="text-gray-400">Projects Completed</div>
@@ -238,7 +302,7 @@ export default function Home() {
               },
               {
                 title: 'Creative Agency',
-                desc: 'Award-winning portfolio site',
+                desc: ' portfolio site',
                 tech: 'React, Framer Motion, Lenis',
               },
               {
@@ -254,9 +318,9 @@ export default function Home() {
             ].map((project, i) => (
               <div
                 key={i}
-                className="work-card group relative h-96 bg-gradient-to-br from-white/5 to-white/0 border border-white/10 rounded-2xl p-8 overflow-hidden hover:border-white/50 transition-all cursor-pointer"
+                className="work-card group relative h-96 r from-white/5 to-white/0 border border-white/10 rounded-2xl p-8 overflow-hidden hover:border-white/50 transition-all cursor-pointer"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 r from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
 
                 <div className="relative z-10 h-full flex flex-col justify-between">
                   <div>

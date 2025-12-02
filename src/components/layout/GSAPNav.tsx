@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import gsap from 'gsap';
 import { FiMail, FiGithub, FiLinkedin, FiTwitter } from 'react-icons/fi';
@@ -22,22 +23,11 @@ const socialLinks = [
 
 export default function GSAPNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
   const menuRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const navBarRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   // GSAP Menu Animation
   useEffect(() => {
     if (isMenuOpen) {
@@ -181,40 +171,33 @@ export default function GSAPNav() {
       {/* Main Navbar */}
       <nav
         ref={navBarRef}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? 'bg-black/90 backdrop-blur-md border-b border-white/10 shadow-lg'
-            : 'bg-transparent'
-        }`}
+        className="fixed top-10 left-0 right-0 z-50 transition-all duration-300 bg-transparent"
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-6 ">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="text-2xl font-bold relative z-50 text-white hover:text-gray-300 transition-colors">
-              Port<span className="text-white">folio</span>
+            <Link href="/" className="font-bold relative z-50 text-white hover:text-gray-300 transition-colors">
+              <Image src="/logo.png" alt="Logo" className='' width={100} height={40} />
             </Link>
 
-            {/* Hamburger Menu Button */}
+            {/* Hamburger Menu Button (positioned to viewport right edge) */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="relative z-50 w-16 h-16 flex items-center justify-center group hover:text-gray-300 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-50 w-16 h-16 flex items-center justify-center group hover:text-gray-300 transition-colors"
               aria-label="Toggle navigation menu"
             >
               <div className="relative w-8 h-6 flex flex-col justify-between">
                 <span
-                  className={`block h-0.5 w-full bg-white transition-all duration-300 ${
-                    isMenuOpen ? 'rotate-45 translate-y-2.5' : ''
-                  }`}
+                  className={`block h-0.5 w-full bg-white transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2.5' : ''
+                    }`}
                 />
                 <span
-                  className={`block h-0.5 w-full bg-white transition-all duration-300 ${
-                    isMenuOpen ? 'opacity-0' : ''
-                  }`}
+                  className={`block h-0.5 w-full bg-white transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''
+                    }`}
                 />
                 <span
-                  className={`block h-0.5 w-full bg-white transition-all duration-300 ${
-                    isMenuOpen ? '-rotate-45 -translate-y-2.5' : ''
-                  }`}
+                  className={`block h-0.5 w-full bg-white transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2.5' : ''
+                    }`}
                 />
               </div>
             </button>
@@ -257,11 +240,10 @@ export default function GSAPNav() {
                     <Link
                       href={link.href}
                       onClick={handleNavClick}
-                      className={`block text-6xl md:text-7xl font-bold transition-all duration-300 hover:scale-105 ${
-                        pathname === link.href
+                      className={`block text-6xl md:text-7xl font-bold transition-all duration-300 hover:scale-105 ${pathname === link.href
                           ? 'text-white'
                           : 'text-gray-400 hover:text-white'
-                      }`}
+                        }`}
                       style={{
                         transformStyle: 'preserve-3d',
                       }}

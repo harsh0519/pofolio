@@ -1,3 +1,70 @@
+/* Glitch hero styles */
+
+.glitch {
+  position: relative; /* relative so it doesn't escape layout; wrapper centers it */
+  pointer-events: none;
+  opacity: 0; /* hidden until timeline shows it */
+  visibility: hidden;
+  white-space: nowrap;
+  display: inline-block;
+  font-size: inherit;
+  line-height: 1;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.glitch-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Reduce text rendering cost in the hero */
+#txt {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.top {
+  -webkit-clip-path: inset(0 0 41% 0);
+  clip-path: inset(0 0 41% 0);
+}
+
+.bottom {
+  -webkit-clip-path: inset(58% 0 0 0);
+  clip-path: inset(58% 0 0 0);
+}
+
+/* Keep bottom glitch layer hidden by default (we'll reveal with GSAP autoAlpha) */
+.glitch.bottom {
+  visibility: hidden;
+}
+
+.redShadow { text-shadow: -3px 0 red; }
+.greenShadow { text-shadow: -3px 0 lime; }
+
+#txt {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap; /* keep text on a single line */
+  margin: 0 auto;
+  text-align: center;
+  z-index: 2;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+/* Ensure hero layering: glitches sit above main text */
+.glitch { z-index: 3; }
+#txt { z-index: 2; }
 @import "tailwindcss";
 
 :root {
@@ -209,12 +276,11 @@ body {
   box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
 }
 
-/* Glass Effect */
+/* Glass Effect removed - replaced with neutral surface to avoid blur/perf cost */
 .glass-effect {
-  background: rgba(20, 20, 20, 0.7);
-  backdrop-filter: blur(24px);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
 }
 
 /* Gradient Text */
@@ -452,7 +518,7 @@ body {
   }
 }
 
-/* Award-Winning Hero Animations */
+/*  Hero Animations */
 @keyframes titleReveal {
   from {
     opacity: 0;

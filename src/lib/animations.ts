@@ -7,7 +7,7 @@ if (typeof window !== 'undefined') {
 }
 
 /**
- * Award-winning animation utilities
+ *  animation utilities
  */
 
 // Smooth reveal animation with stagger

@@ -1,18 +1,40 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sphere, MeshDistortMaterial, Float, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 
-function AnimatedSphere() {
+interface MousePosition {
+  x: number;
+  y: number;
+}
+
+function AnimatedSphere({ mousePosition }: { mousePosition: MousePosition }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const glowRef = useRef<THREE.Mesh>(null);
 
   useFrame((state) => {
     if (meshRef.current) {
-      meshRef.current.rotation.x = state.clock.getElapsedTime() * 0.2;
-      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.3;
+      // Base rotation with time
+      const baseRotationX = state.clock.getElapsedTime() * 0.2;
+      const baseRotationY = state.clock.getElapsedTime() * 0.3;
+
+      // Add mouse-influenced rotation (inverted for natural feel)
+      const targetRotationX = baseRotationX + mousePosition.y * 0.5;
+      const targetRotationY = baseRotationY + mousePosition.x * 0.5;
+
+      // Smooth interpolation
+      meshRef.current.rotation.x = THREE.MathUtils.lerp(
+        meshRef.current.rotation.x,
+        targetRotationX,
+        0.05
+      );
+      meshRef.current.rotation.y = THREE.MathUtils.lerp(
+        meshRef.current.rotation.y,
+        targetRotationY,
+        0.05
+      );
     }
 
     // Pulsing glow effect
@@ -50,7 +72,7 @@ function AnimatedSphere() {
         size={2}
         speed={0.4}
         opacity={0.6}
-        color="#FCD34D"
+        color=" #EF4444"
       />
     </Float>
   );
@@ -64,7 +86,7 @@ function ParticleField() {
         (Math.random() - 0.5) * 20,
         (Math.random() - 0.5) * 20,
       ] as [number, number, number],
-      color: Math.random() > 0.5 ? '#8B5CF6' : '#FCD34D',
+      color: Math.random() > 0.5 ? '#8B5CF6' : ' #EF4444',
     }));
     return p;
   }, []);
@@ -82,6 +104,24 @@ function ParticleField() {
 }
 
 export default function Scene3D() {
+  const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      // Normalize mouse position to -1 to 1 range
+      const x = (event.clientX / window.innerWidth) * 2 - 1;
+      const y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
   return (
     <div className="w-full h-full">
       <Canvas
@@ -97,10 +137,10 @@ export default function Scene3D() {
         {/* Enhanced lighting */}
         <ambientLight intensity={0.8} />
         <pointLight position={[10, 10, 10]} intensity={2} color="#A78BFA" />
-        <pointLight position={[-10, -10, -10]} intensity={1.5} color="#FCD34D" />
+        <pointLight position={[-10, -10, -10]} intensity={1.5} color=" #EF4444" />
         <pointLight position={[0, 5, 5]} intensity={1} color="#8B5CF6" />
 
-        <AnimatedSphere />
+        <AnimatedSphere mousePosition={mousePosition} />
         <ParticleField />
 
         <OrbitControls
