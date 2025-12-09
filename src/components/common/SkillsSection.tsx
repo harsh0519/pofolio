@@ -33,13 +33,6 @@ const skillsData: SkillCategory[] = [
     level: 8
   },
   {
-    title: '3D / WebGL',
-    color: 'from-orange-400 to-orange-600',
-    icon: '🌐',
-    skills: ['Three.js', 'React Three Fiber', 'Drei', 'GLSL Basics', 'WebGL Shaders', '3D Scene Optimization', 'Lighting', 'Camera Controls', 'Particle Systems'],
-    level: 8
-  },
-  {
     title: 'Backend Development',
     color: 'from-green-400 to-green-600',
     icon: '⚙️',
@@ -52,13 +45,6 @@ const skillsData: SkillCategory[] = [
     icon: '🔐',
     skills: ['JWT', 'Bcrypt', 'Access Tokens', 'Refresh Tokens', 'Middleware Auth', 'Secure API Integration'],
     level: 7
-  },
-  {
-    title: 'State Management',
-    color: 'from-red-400 to-red-600',
-    icon: '📦',
-    skills: ['Zustand', 'React Context API', 'Local Storage State', 'Global Stores'],
-    level: 8
   },
   {
     title: 'Dev Tools',
@@ -87,13 +73,6 @@ const skillsData: SkillCategory[] = [
     icon: '🎭',
     skills: ['Figma', 'Canva', 'UI/UX Design', 'Wireframing', 'Visual Layouts', 'Color Systems', 'Component-Driven Design', 'Portfolio UI'],
     level: 8
-  },
-  {
-    title: 'AI & Python',
-    color: 'from-amber-400 to-amber-600',
-    icon: '🤖',
-    skills: ['Python Chatbots', 'Travel Assistant AI', 'Recommendation Logic', 'OpenAI API Basics'],
-    level: 6
   },
   {
     title: 'Other Useful Skills',
@@ -277,14 +256,11 @@ export default function SkillsSection() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: false }}
-        className="max-w-7xl mx-auto mb-20"
+        className="max-w-7xl mx-auto mb-20 justify-center text-center"
       >
         <h2 className="text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4">
-          My <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Skills</span>
+          What I  <span className="bg-gradient-to-r from-gray-400 via-gray-400 to-white bg-clip-text text-transparent">Can Do</span>
         </h2>
-        <p className="text-gray-400 text-lg max-w-2xl">
-          A comprehensive toolkit built through hands-on development, focusing on modern web technologies, 3D graphics, and full-stack solutions.
-        </p>
       </motion.div>
 
       {/* Skills Grid */}

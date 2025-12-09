@@ -312,51 +312,128 @@ export default function SpotifyShowcase() {
           <span className="bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 bg-clip-text text-transparent animate-pulse">
             Spotify
           </span>
-          {" "}Vibes
+          {" "}Player
         </h1>
-        <p className="text-gray-400 text-lg">Your music, your moment</p>
+        <p className="text-gray-400 text-lg">Want a moment to think? Hit play and drift</p>
       </motion.div>
 
-      {/* ===== PLAYER PANEL ===== */}
-      <motion.div
-        ref={panelRef}
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="mx-auto max-w-4xl px-6 sm:px-10 mb-20"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-          {/* Album Art */}
-          <motion.div
-            whileHover={{ scale: 1.05, rotateY: 8 }}
-            transition={{ duration: 0.3 }}
-            className="relative group md:order-1"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all" />
-            <div className="relative w-full aspect-square rounded-2xl bg-white/10 overflow-hidden border border-white/20 shadow-2xl">
-              {now?.item?.album?.images?.[0] ? (
-                <Image
-                  src={now.item.album.images[0].url}
-                  fill
-                  alt="current"
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-5xl">
-                  🎵
-                </div>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-            </div>
-          </motion.div>
+      {/* ===== MAIN LAYOUT ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-          {/* Track Info & Progress */}
+        {/* Left Side - Top Tracks */}
+        {connected && topTracks.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col justify-center gap-4 md:col-span-2 md:order-2"
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="space-y-4"
           >
+            <h3 className="text-xl font-bold text-white mb-4">Your Top Tracks</h3>
+            {topTracks.slice(0, 5).map((track: any, index: number) => (
+              <motion.div
+                key={track.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                whileHover={{ x: 8, scale: 1.02 }}
+                className="group flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 
+                         hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer"
+                onClick={() => handlePlayTrack(track.uri)}
+              >
+                {/* Track number */}
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 border border-green-400/30 
+                              flex items-center justify-center text-xs font-bold text-green-400">
+                  {index + 1}
+                </div>
+
+                {/* Album art */}
+                <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-white/20">
+                  {track.album?.images?.[2] && (
+                    <Image
+                      src={track.album.images[2].url}
+                      width={40}
+                      height={40}
+                      alt={track.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                    />
+                  )}
+                </div>
+
+                {/* Track info */}
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-white font-medium text-sm truncate group-hover:text-green-400 transition-colors">
+                    {track.name}
+                  </h4>
+                  <p className="text-gray-400 text-xs truncate">
+                    {track.artists?.map((a: any) => a.name).join(', ')}
+                  </p>
+                </div>
+
+                {/* Play indicator */}
+                <motion.div
+                  whileHover={{ scale: 1.2 }}
+                  className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 border border-green-400/30 
+                           flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <span className="text-green-400 text-xs">▶</span>
+                </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+
+        {/* Center - Player Panel */}
+        <motion.div
+          ref={panelRef}
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="lg:col-span-1"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            {/* Album Art - Rotating Disk */}
+            <motion.div
+              whileHover={{ scale: 1.05, rotateY: 8 }}
+              transition={{ duration: 0.3 }}
+              className="relative group md:order-1"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all" />
+              <div className="relative w-full aspect-square rounded-full bg-white/10 overflow-hidden border border-white/20 shadow-2xl">
+                {now?.item?.album?.images?.[0] ? (
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                    className="w-full h-full relative"
+                  >
+                    <Image
+                      src={now.item.album.images[0].url}
+                      fill
+                      alt="current"
+                      className="object-cover group-hover:scale-110 transition-transform duration-500 rounded-full"
+                    />
+                    {/* Vinyl record center hole */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-8 h-8 bg-black rounded-full border-4 border-white/20 flex items-center justify-center">
+                        <div className="w-2 h-2 bg-white/40 rounded-full"></div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-5xl">
+                    🎵
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+              </div>
+            </motion.div>
+
+            {/* Track Info & Progress */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-col justify-center gap-4 md:col-span-2 md:order-2"
+            >
             <div>
               <div className="text-xs text-green-400 font-semibold uppercase tracking-widest mb-2">
                 Now Playing
@@ -371,90 +448,158 @@ export default function SpotifyShowcase() {
               </p>
             </div>
 
-            {/* Progress Bar */}
-            <div className="space-y-2">
-              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 rounded-full"
-                  style={{
-                    width:
-                      now?.progress_ms && now?.item?.duration_ms
-                        ? `${Math.round(
-                          (now.progress_ms / now.item.duration_ms) * 100
-                        )}%`
-                        : "0%",
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
+            {/* Progress Bar - Only show when playing */}
+            {now?.item && (
+              <div className="space-y-2">
+                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 rounded-full"
+                    style={{
+                      width:
+                        now?.progress_ms && now?.item?.duration_ms
+                          ? `${Math.round(
+                            (now.progress_ms / now.item.duration_ms) * 100
+                          )}%`
+                          : "0%",
+                    }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{Math.floor((now?.progress_ms || 0) / 1000 / 60)}:{String(Math.floor(((now?.progress_ms || 0) / 1000) % 60)).padStart(2, '0')}</span>
+                  <span>{Math.floor((now?.item?.duration_ms || 0) / 1000 / 60)}:{String(Math.floor(((now?.item?.duration_ms || 0) / 1000) % 60)).padStart(2, '0')}</span>
+                </div>
               </div>
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>{Math.floor((now?.progress_ms || 0) / 1000 / 60)}:{String(Math.floor(((now?.progress_ms || 0) / 1000) % 60)).padStart(2, '0')}</span>
-                <span>{Math.floor((now?.item?.duration_ms || 0) / 1000 / 60)}:{String(Math.floor(((now?.item?.duration_ms || 0) / 1000) % 60)).padStart(2, '0')}</span>
-              </div>
-            </div>
+            )}
 
-            {/* Controls */}
-            <div className="flex gap-3 items-center">
-              <motion.button
-                whileHover={{ scale: 1.15 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handlePrevious}
-                className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/10 
-                         border border-white/30 flex items-center justify-center text-white 
-                         hover:from-white/40 hover:to-white/20 transition-all"
-              >
-                ◀
-              </motion.button>
-
-              {isPlaying ? (
+            {/* Controls - Only show when playing current track */}
+            {now?.item && (
+              <div className="flex gap-3 items-center">
                 <motion.button
                   whileHover={{ scale: 1.15 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={handlePause}
-                  className="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 
-                           text-black font-bold flex items-center justify-center shadow-lg 
-                           hover:shadow-green-500/50 transition-all"
+                  onClick={handlePrevious}
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/10 
+                           border border-white/30 flex items-center justify-center text-white 
+                           hover:from-white/40 hover:to-white/20 transition-all"
                 >
-                  ❚❚
+                  ◀
                 </motion.button>
-              ) : (
+
+                {isPlaying ? (
+                  <motion.button
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handlePause}
+                    className="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 
+                             text-black font-bold flex items-center justify-center shadow-lg 
+                             hover:shadow-green-500/50 transition-all"
+                  >
+                    ❚❚
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handlePlay}
+                    className="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 
+                             text-black font-bold flex items-center justify-center shadow-lg 
+                             hover:shadow-green-500/50 transition-all"
+                  >
+                    ▶
+                  </motion.button>
+                )}
+
                 <motion.button
                   whileHover={{ scale: 1.15 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={handlePlay}
-                  className="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 
-                           text-black font-bold flex items-center justify-center shadow-lg 
-                           hover:shadow-green-500/50 transition-all"
+                  onClick={handleNext}
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/10 
+                           border border-white/30 flex items-center justify-center text-white 
+                           hover:from-white/40 hover:to-white/20 transition-all"
                 >
                   ▶
                 </motion.button>
-              )}
 
-              <motion.button
-                whileHover={{ scale: 1.15 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleNext}
-                className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/10 
-                         border border-white/30 flex items-center justify-center text-white 
-                         hover:from-white/40 hover:to-white/20 transition-all"
-              >
-                ▶
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleSurprise}
-                className="ml-auto px-4 py-2 text-sm rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20
-                         border border-purple-400/30 text-white font-semibold 
-                         hover:from-purple-500/40 hover:to-pink-500/40 transition-all"
-              >
-                🎲 Surprise
-              </motion.button>
-            </div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleSurprise}
+                  className="ml-auto px-4 py-2 text-sm rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20
+                           border border-purple-400/30 text-white font-semibold 
+                           hover:from-purple-500/40 hover:to-pink-500/40 transition-all"
+                >
+                  🎲 Surprise
+                </motion.button>
+              </div>
+            )}
           </motion.div>
         </div>
       </motion.div>
+
+        {/* Right Side - More Top Tracks */}
+        {connected && topTracks.length > 5 && (
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="space-y-4"
+          >
+            <h3 className="text-xl font-bold text-white mb-4">More Favorites</h3>
+            {topTracks.slice(5, 10).map((track: any, index: number) => (
+              <motion.div
+                key={track.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                whileHover={{ x: -8, scale: 1.02 }}
+                className="group flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 
+                         hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer"
+                onClick={() => handlePlayTrack(track.uri)}
+              >
+                {/* Track number */}
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 border border-green-400/30 
+                              flex items-center justify-center text-xs font-bold text-green-400">
+                  {index + 6}
+                </div>
+
+                {/* Album art */}
+                <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-white/20">
+                  {track.album?.images?.[2] && (
+                    <Image
+                      src={track.album.images[2].url}
+                      width={40}
+                      height={40}
+                      alt={track.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                    />
+                  )}
+                </div>
+
+                {/* Track info */}
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-white font-medium text-sm truncate group-hover:text-green-400 transition-colors">
+                    {track.name}
+                  </h4>
+                  <p className="text-gray-400 text-xs truncate">
+                    {track.artists?.map((a: any) => a.name).join(', ')}
+                  </p>
+                </div>
+
+                {/* Play indicator */}
+                <motion.div
+                  whileHover={{ scale: 1.2 }}
+                  className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 border border-green-400/30 
+                           flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <span className="text-green-400 text-xs">▶</span>
+                </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+
+      </div>
 
       {/* Empty State */}
       {!connected && (

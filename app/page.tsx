@@ -164,14 +164,11 @@ export default function Home() {
           <SkillsSection />
         </div>
       </section>
-
-      <section className="parallax-section relative py-20 sm:py-28 lg:py-32 overflow-hidden">
+      <section className="parallax-section relative py-20 sm:py-28 lg:py-32 overflow-hidden mt-[-300px]">
         <div className="parallax-content text-center">
           <h2 className="text-5xl md:text-7xl font-bold mb-8">Let's Create Something<br /><span className="text-white">Amazing Together</span></h2>
           <Link href="/contact" className="inline-flex items-center gap-2 px-10 py-5 bg-white text-black font-bold text-lg rounded-full hover:scale-105 transition-transform shadow-lg hover:shadow-xl">Start a Project <FiArrowRight /></Link>
         </div>
-      </section>
-      <section className="parallax-section relative py-20 sm:py-28 lg:py-32 overflow-hidden">
         <div className="parallax-content container mx-auto px-6">
           <div className="grid md:grid-cols-1 gap-16 items-center">
             <div className="page-transition relative">
