@@ -609,14 +609,16 @@ export default function SpotifyShowcase() {
           className="mx-auto max-w-2xl px-6 sm:px-10 text-center py-20"
         >
           <div className="text-6xl mb-4">🎧</div>
-          <h3 className="text-2xl font-bold text-white mb-2">Connect Your Spotify</h3>
-          <p className="text-gray-400 mb-6">Link your account to see your favorite tracks and artists</p>
+          <h3 className="text-2xl font-bold text-white mb-2">Spotify Integration Demo</h3>
+          <p className="text-gray-400 mb-4">This portfolio features live Spotify integration!</p>
+          <p className="text-gray-500 text-sm mb-6">Connect your Spotify account to see your currently playing music, top tracks, and control playback.</p>
           <button
             onClick={() => window.location.href = '/api/spotify/auth'}
             className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-full transition-all"
           >
-            Connect Now
+            Connect Your Spotify
           </button>
+          <p className="text-gray-600 text-xs mt-4">* Each visitor needs to connect their own Spotify account</p>
         </motion.div>
       )}
     </div>
