@@ -4,8 +4,19 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
+  const error = url.searchParams.get('error');
 
-  const storedState = req.cookies.get('spotify_auth_state')?.value;
+  console.log('🎵 Spotify Callback - Received params:', { code: !!code, state, error });
+
+  if (error) {
+    console.log('🎵 Spotify Callback - Error:', error);
+    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL || '/'}?spotify_error=${error}`);
+  }
+
+  if (!code) {
+    console.log('🎵 Spotify Callback - No code received');
+    return NextResponse.json({ error: 'Missing code' }, { status: 400 });
+  }
 
   if (!code) {
     return NextResponse.json({ error: 'Missing code' }, { status: 400 });
@@ -20,7 +31,12 @@ export async function GET(req: NextRequest) {
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
   const redirectUri = process.env.SPOTIFY_REDIRECT_URI || `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/callback`;
 
+  console.log('🎵 Spotify Callback - Client ID:', !!clientId);
+  console.log('🎵 Spotify Callback - Client Secret:', !!clientSecret);
+  console.log('🎵 Spotify Callback - Redirect URI:', redirectUri);
+
   if (!clientId || !clientSecret) {
+    console.log('🎵 Spotify Callback - ERROR: Missing credentials');
     return NextResponse.json({ error: 'Missing Spotify client credentials' }, { status: 500 });
   }
 
@@ -37,11 +53,18 @@ export async function GET(req: NextRequest) {
     body: body.toString(),
   });
 
+  console.log('🎵 Spotify Callback - Token exchange response status:', tokenRes.status);
+
   const tokenData = await tokenRes.json();
 
   if (!tokenRes.ok) {
+    console.log('🎵 Spotify Callback - Token exchange failed:', tokenData);
     return NextResponse.json({ error: 'Failed to exchange token', details: tokenData }, { status: 500 });
   }
+
+  console.log('🎵 Spotify Callback - Token exchange successful');
+  console.log('🎵 Spotify Callback - Access token received:', !!tokenData.access_token);
+  console.log('🎵 Spotify Callback - Refresh token received:', !!tokenData.refresh_token);
 
   const accessToken = tokenData.access_token;
   const refreshToken = tokenData.refresh_token;

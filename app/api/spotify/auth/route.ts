@@ -2,14 +2,15 @@ import { NextResponse, NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
-  // Build redirect URI robustly:
-  // - If SPOTIFY_REDIRECT_URI is set and non-empty, use it exactly.
-  // - Otherwise use NEXT_PUBLIC_BASE_URL (or default localhost) and append /api/spotify/callback
-  const envRedirect = typeof process.env.SPOTIFY_REDIRECT_URI === 'string' ? process.env.SPOTIFY_REDIRECT_URI.trim() : '';
-  let redirectUri = envRedirect || '';
-  if (!redirectUri) {
-    const base = (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000').replace(/\/$/, '');
-    redirectUri = `${base}/api/spotify/callback`;
+  const redirectUri = process.env.SPOTIFY_REDIRECT_URI || `${process.env.NEXT_PUBLIC_BASE_URL}/api/spotify/callback`;
+
+  console.log('🎵 Spotify Auth - Starting authentication');
+  console.log('🎵 Spotify Auth - Client ID:', !!clientId);
+  console.log('🎵 Spotify Auth - Redirect URI:', redirectUri);
+
+  if (!clientId) {
+    console.log('🎵 Spotify Auth - ERROR: Missing SPOTIFY_CLIENT_ID');
+    return NextResponse.json({ error: 'Missing SPOTIFY_CLIENT_ID env var' }, { status: 500 });
   }
   const scopes = [
     'user-read-playback-state',
@@ -36,6 +37,8 @@ export async function GET(req: NextRequest) {
   });
 
   const authUrl = `https://accounts.spotify.com/authorize?${params.toString()}`;
+
+  console.log('🎵 Spotify Auth - Generated auth URL:', authUrl.replace(/response_type=code&client_id=[^&]+&scope=[^&]+&redirect_uri=([^&]+)&state=[^&]+/, 'response_type=code&client_id=***&scope=***&redirect_uri=$1&state=***'));
 
   // allow debug mode to inspect the exact URL Spotify will receive
   const url = new URL(req.url);
