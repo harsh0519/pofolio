@@ -112,7 +112,37 @@ export default function SpotifyShowcase() {
 
   useEffect(() => {
     fetchMe();
+    fetchTop();
+
+    // Set up live updates every 30 seconds
+    const liveUpdateInterval = setInterval(() => {
+      fetchCurrentPlaying();
+    }, 30000);
+
+    return () => clearInterval(liveUpdateInterval);
   }, []);
+
+  // Separate function for live current playing updates
+  async function fetchCurrentPlaying() {
+    try {
+      const res = await fetch('/api/spotify/me');
+      if (res.ok) {
+        const data = await res.json();
+        setNow(data.now ?? null);
+        setProfile(data.profile ?? null);
+        setConnected(true);
+      } else if (res.status === 401) {
+        // Try to refresh token
+        const refreshRes = await fetch('/api/spotify/refresh');
+        if (refreshRes.ok) {
+          // Retry after refresh
+          setTimeout(fetchCurrentPlaying, 1000);
+        }
+      }
+    } catch (err) {
+      // Silently fail for live updates
+    }
+  }
 
   // fetch user's top artists/tracks
   async function fetchTop(retry = true) {
@@ -419,9 +449,21 @@ export default function SpotifyShowcase() {
                     </div>
                   </motion.div>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-5xl">
-                    🎵
-                  </div>
+                  // Demo album art when not connected
+                  <motion.div
+                    animate={{ rotate: connected ? 0 : 360 }}
+                    transition={{ duration: connected ? 0 : 3, repeat: connected ? 0 : Infinity, ease: "linear" }}
+                    className="w-full h-full relative flex items-center justify-center"
+                  >
+                    <div className="text-6xl">🎵</div>
+                    {!connected && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-8 h-8 bg-black rounded-full border-4 border-white/20 flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white/40 rounded-full"></div>
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               </div>
@@ -439,54 +481,70 @@ export default function SpotifyShowcase() {
                 Now Playing
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-white leading-tight">
-                {now?.item?.name ?? "Nothing Playing"}
+                {now?.item?.name ?? (connected ? "Nothing Playing" : "Live Music Feed")}
               </h2>
               <p className="text-gray-400 text-base mt-2">
-                {(now?.item?.artists || [])
+                {now?.item?.artists ? (now.item.artists || [])
                   .map((a: any) => a.name)
-                  .join(", ") || "Unknown Artist"}
+                  .join(", ") : (connected ? "Unknown Artist" : "Portfolio owner's current track")}
               </p>
             </div>
 
-            {/* Progress Bar - Only show when playing */}
-            {now?.item && (
+            {/* Progress Bar - Show demo when not connected */}
+            {(now?.item || !connected) && (
               <div className="space-y-2">
                 <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
                   <motion.div
                     className="h-full bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 rounded-full"
+                    animate={!connected ? { width: ["0%", "30%", "60%", "100%"] } : {}}
+                    transition={!connected ? { duration: 4, repeat: Infinity, ease: "linear" } : { duration: 0.3 }}
                     style={{
-                      width:
-                        now?.progress_ms && now?.item?.duration_ms
-                          ? `${Math.round(
-                            (now.progress_ms / now.item.duration_ms) * 100
-                          )}%`
-                          : "0%",
+                      width: connected && now?.progress_ms && now?.item?.duration_ms
+                        ? `${Math.round((now.progress_ms / now.item.duration_ms) * 100)}%`
+                        : (!connected ? "30%" : "0%"),
                     }}
-                    transition={{ duration: 0.3 }}
                   />
                 </div>
                 <div className="flex justify-between text-xs text-gray-500">
-                  <span>{Math.floor((now?.progress_ms || 0) / 1000 / 60)}:{String(Math.floor(((now?.progress_ms || 0) / 1000) % 60)).padStart(2, '0')}</span>
-                  <span>{Math.floor((now?.item?.duration_ms || 0) / 1000 / 60)}:{String(Math.floor(((now?.item?.duration_ms || 0) / 1000) % 60)).padStart(2, '0')}</span>
+                  <span>
+                    {connected && now?.progress_ms
+                      ? Math.floor((now.progress_ms || 0) / 1000 / 60) + ":" + String(Math.floor(((now.progress_ms || 0) / 1000) % 60)).padStart(2, '0')
+                      : (!connected ? "1:23" : "0:00")}
+                  </span>
+                  <span>
+                    {connected && now?.item?.duration_ms
+                      ? Math.floor((now.item.duration_ms || 0) / 1000 / 60) + ":" + String(Math.floor(((now.item.duration_ms || 0) / 1000) % 60)).padStart(2, '0')
+                      : (!connected ? "3:45" : "0:00")}
+                  </span>
                 </div>
               </div>
             )}
 
-            {/* Controls - Only show when playing current track */}
-            {now?.item && (
+            {/* Controls - Show demo controls when not connected */}
+            {(now?.item || !connected) && (
               <div className="flex gap-3 items-center">
                 <motion.button
                   whileHover={{ scale: 1.15 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={handlePrevious}
+                  onClick={connected ? handlePrevious : undefined}
                   className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/10 
                            border border-white/30 flex items-center justify-center text-white 
-                           hover:from-white/40 hover:to-white/20 transition-all"
+                           hover:from-white/40 hover:to-white/20 transition-all disabled:opacity-50"
+                  disabled={!connected}
                 >
                   ◀
                 </motion.button>
 
-                {isPlaying ? (
+                {!connected ? (
+                  <motion.button
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 
+                             text-black font-bold flex items-center justify-center shadow-lg"
+                  >
+                    ▶
+                  </motion.button>
+                ) : (isPlaying ? (
                   <motion.button
                     whileHover={{ scale: 1.15 }}
                     whileTap={{ scale: 0.95 }}
@@ -508,15 +566,16 @@ export default function SpotifyShowcase() {
                   >
                     ▶
                   </motion.button>
-                )}
+                ))}
 
                 <motion.button
                   whileHover={{ scale: 1.15 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={handleNext}
+                  onClick={connected ? handleNext : undefined}
                   className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/10 
                            border border-white/30 flex items-center justify-center text-white 
-                           hover:from-white/40 hover:to-white/20 transition-all"
+                           hover:from-white/40 hover:to-white/20 transition-all disabled:opacity-50"
+                  disabled={!connected}
                 >
                   ▶
                 </motion.button>
@@ -524,10 +583,11 @@ export default function SpotifyShowcase() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={handleSurprise}
+                  onClick={connected ? handleSurprise : undefined}
                   className="ml-auto px-4 py-2 text-sm rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20
-                           border border-purple-400/30 text-white font-semibold 
-                           hover:from-purple-500/40 hover:to-pink-500/40 transition-all"
+                           border border-purple-400/30 text-white font-semibold
+                           hover:from-purple-500/40 hover:to-pink-500/40 transition-all disabled:opacity-50"
+                  disabled={!connected}
                 >
                   🎲 Surprise
                 </motion.button>
@@ -601,25 +661,40 @@ export default function SpotifyShowcase() {
 
       </div>
 
-      {/* Empty State */}
-      {!connected && (
+      {/* Empty State - Show when no data available */}
+      {!connected && !now && topTracks.length === 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mx-auto max-w-2xl px-6 sm:px-10 text-center py-20"
+          className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-10"
         >
-          <div className="text-6xl mb-4">🎧</div>
-          <h3 className="text-2xl font-bold text-white mb-2">Spotify Integration Demo</h3>
-          <p className="text-gray-400 mb-4">This portfolio features live Spotify integration!</p>
-          <p className="text-gray-500 text-sm mb-6">Connect your Spotify account to see your currently playing music, top tracks, and control playback.</p>
-          <button
-            onClick={() => window.location.href = '/api/spotify/auth'}
-            className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-full transition-all"
-          >
-            Connect Your Spotify
-          </button>
-          <p className="text-gray-600 text-xs mt-4">* Each visitor needs to connect their own Spotify account</p>
+          <div className="text-center px-6">
+            <div className="text-6xl mb-4">🎧</div>
+            <h3 className="text-2xl font-bold text-white mb-2">Live Spotify Showcase</h3>
+            <p className="text-gray-400 mb-6">Portfolio owner: Connect your Spotify to show live music activity</p>
+            <button
+              onClick={() => window.location.href = '/api/spotify/auth'}
+              className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-full transition-all"
+            >
+              Connect Spotify
+            </button>
+          </div>
         </motion.div>
+      )}
+
+      {/* Live Status Indicator */}
+      {connected && (
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="absolute top-4 right-4 z-20"
+        >
+          <div className="flex items-center gap-2 bg-green-500/20 border border-green-400/30 rounded-full px-3 py-1">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-green-400 text-sm font-medium">Live</span>
+          </div>
+        </motion.div>
+      )}
       )}
     </div>
   );
