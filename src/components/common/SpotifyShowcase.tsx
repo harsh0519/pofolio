@@ -695,7 +695,6 @@ export default function SpotifyShowcase() {
           </div>
         </motion.div>
       )}
-      )}
     </div>
   );
 
