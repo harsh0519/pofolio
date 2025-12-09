@@ -1,7 +1,11 @@
 import { NextResponse, NextRequest } from 'next/server';
 
+// Store refresh token persistently (in production, use a database)
+let persistentRefreshToken: string | null = null;
+
 export async function GET(req: NextRequest) {
-  const refreshToken = req.cookies.get('spotify_refresh_token')?.value;
+  // If we have a persistent refresh token, use it
+  const refreshToken = persistentRefreshToken || req.cookies.get('spotify_refresh_token')?.value;
 
   if (!refreshToken) {
     return NextResponse.json({ error: 'No refresh token' }, { status: 401 });
@@ -34,7 +38,27 @@ export async function GET(req: NextRequest) {
   const accessToken = tokenData.access_token;
   const expiresIn = tokenData.expires_in || 3600;
 
+  // Store new refresh token if provided
+  if (tokenData.refresh_token) {
+    persistentRefreshToken = tokenData.refresh_token;
+  }
+
   const res = NextResponse.json({ ok: true, expiresIn });
   res.cookies.set('spotify_access_token', accessToken, { httpOnly: true, path: '/', maxAge: expiresIn });
   return res;
+}
+
+// POST endpoint to set persistent refresh token (for initial setup)
+export async function POST(req: NextRequest) {
+  try {
+    const { refreshToken } = await req.json();
+    if (!refreshToken) {
+      return NextResponse.json({ error: 'No refresh token provided' }, { status: 400 });
+    }
+
+    persistentRefreshToken = refreshToken;
+    return NextResponse.json({ success: true, message: 'Refresh token stored persistently' });
+  } catch (err) {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  }
 }

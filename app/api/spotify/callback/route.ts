@@ -69,6 +69,20 @@ export async function GET(req: NextRequest) {
   const refreshToken = tokenData.refresh_token;
   const expiresIn = tokenData.expires_in || 3600;
 
+  // Store refresh token persistently for auto-refresh
+  if (refreshToken) {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/spotify/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+      });
+      console.log('🎵 Spotify Callback - Refresh token stored persistently');
+    } catch (err) {
+      console.log('🎵 Spotify Callback - Failed to store persistent refresh token:', err);
+    }
+  }
+
   const debug = url.searchParams.get('debug');
 
   // cookie options: make explicit sameSite and secure so cookies are visible in dev

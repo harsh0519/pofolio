@@ -79,16 +79,11 @@ export default function SpotifyShowcase() {
     return () => window.removeEventListener("mousemove", handleMove);
   }, []);
 
-  async function fetchMe(retry = true) {
+  async function fetchMe() {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch('/api/spotify/me');
-      if (res.status === 401 && retry) {
-        // try refresh
-        await fetch('/api/spotify/refresh');
-        return fetchMe(false);
-      }
 
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
@@ -136,21 +131,9 @@ export default function SpotifyShowcase() {
         setProfile(data.profile ?? null);
         setConnected(true);
         console.log('🎵 fetchCurrentPlaying: Connected set to true');
-      } else if (res.status === 401) {
-        console.log('🎵 fetchCurrentPlaying: 401 - trying refresh');
-        // Try to refresh token
-        const refreshRes = await fetch('/api/spotify/refresh');
-        console.log('🎵 fetchCurrentPlaying: Refresh response:', refreshRes.status);
-        if (refreshRes.ok) {
-          // Retry after refresh
-          setTimeout(fetchCurrentPlaying, 1000);
-        } else {
-          setConnected(false);
-          console.log('🎵 fetchCurrentPlaying: Refresh failed');
-        }
       } else {
         setConnected(false);
-        console.log('🎵 fetchCurrentPlaying: Other error status:', res.status);
+        console.log('🎵 fetchCurrentPlaying: Error status:', res.status);
       }
     } catch (err) {
       console.log('🎵 fetchCurrentPlaying: Error:', err);
@@ -160,14 +143,9 @@ export default function SpotifyShowcase() {
   }
 
   // fetch user's top artists/tracks
-  async function fetchTop(retry = true) {
+  async function fetchTop() {
     try {
       const res = await fetch('/api/spotify/top');
-      if (res.status === 401 && retry) {
-        await fetch('/api/spotify/refresh');
-        return fetchTop(false);
-      }
-
       if (!res.ok) return;
       const data = await res.json();
       setTopArtists(data.artists ?? []);
