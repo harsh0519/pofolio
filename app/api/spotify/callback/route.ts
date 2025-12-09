@@ -18,12 +18,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Missing code' }, { status: 400 });
   }
 
-  if (!code) {
-    return NextResponse.json({ error: 'Missing code' }, { status: 400 });
-  }
+  const storedState = req.cookies.get('spotify_auth_state')?.value;
 
   // optional state check
   if (state && storedState && state !== storedState) {
+    console.log('🎵 Spotify Callback - State mismatch');
     return NextResponse.json({ error: 'State mismatch', receivedState: state, storedState }, { status: 400 });
   }
 
