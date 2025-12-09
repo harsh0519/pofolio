@@ -217,7 +217,6 @@ export default function SpotifyShowcase() {
       player.addListener('ready', ({ device_id }: { device_id: string }) => {
         setDeviceId(device_id);
         setPlayerReady(true);
-        // transfer playback to this device (do not start playing automatically)
         fetch('/api/spotify/token')
           .then((r) => r.json())
           .then(async (j) => {
@@ -686,7 +685,10 @@ export default function SpotifyShowcase() {
           <div className="text-center px-6">
             <div className="text-6xl mb-4">🎧</div>
             <h3 className="text-2xl font-bold text-white mb-2">Live Spotify Showcase</h3>
-            <p className="text-gray-400 mb-6">Portfolio owner: Connect your Spotify to show live music activity</p>
+            <p className="text-gray-400 mb-4">Portfolio owner: Connect your Spotify to show live music activity</p>
+            <div className="mb-4 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
+              <p className="text-red-400 text-sm">⚠️ Authentication required for live data</p>
+            </div>
             <button
               onClick={() => window.location.href = '/api/spotify/auth'}
               className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-full transition-all"
@@ -713,8 +715,27 @@ export default function SpotifyShowcase() {
         </div>
 
         {/* Debug Info */}
-        <div className="text-xs text-gray-500 bg-black/50 px-2 py-1 rounded">
-          Now: {now ? '✅' : '❌'} | Profile: {profile ? '✅' : '❌'}
+        <div className="text-xs text-gray-500 bg-black/50 px-2 py-1 rounded flex flex-col items-start">
+          <div>Now: {now ? '✅' : '❌'} | Profile: {profile ? '✅' : '❌'}</div>
+          <button
+            onClick={async () => {
+              try {
+                const res = await fetch('/api/spotify/me');
+                console.log('Manual check - Status:', res.status);
+                if (res.ok) {
+                  const data = await res.json();
+                  console.log('Manual check - Data:', data);
+                } else {
+                  console.log('Manual check - Error response');
+                }
+              } catch (err) {
+                console.log('Manual check - Error:', err);
+              }
+            }}
+            className="mt-1 px-2 py-1 bg-blue-500/20 hover:bg-blue-500/40 text-blue-400 text-xs rounded"
+          >
+            Check Auth
+          </button>
         </div>
       </motion.div>
     </div>
