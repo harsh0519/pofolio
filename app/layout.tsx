@@ -5,6 +5,7 @@ import SmoothScrollProvider from "@/providers/SmoothScrollProvider";
 import GSAPNav from "@/components/layout/GSAPNav";
 import PageTransation from "@/components/common/PageTransition";
 import LoadingScreen from "@/components/common/LoadingScreen";
+import BackgroundScene from "@/components/common/BackgroundScene";
 
 export const metadata: Metadata = {
   title: "Harsh Kumar - Web Developer & 3D Enthusiast",
@@ -18,7 +19,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className="antialiased custom-cursor">
+      <body className="antialiased custom-cursor bg-black">
+        <BackgroundScene />
         <LoadingScreen />
         <SmoothScrollProvider>
           <CursorProvider />

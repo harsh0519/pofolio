@@ -18,44 +18,36 @@ export default function PremiumButton({
 }: PremiumButtonProps) {
   const buttonRef = useRef<HTMLButtonElement | HTMLAnchorElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
-  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const button = buttonRef.current;
     if (!button) return;
 
-    const handleMouseEnter = () => {
-      setIsHovering(true);
+    const overlay = button.querySelector('.button-text-overlay');
 
-      // Animate text out upward
+    const enter = () => {
       gsap.to(textRef.current, {
-        y: -50,
+        y: -40,
         opacity: 0,
         duration: 0.3,
         ease: 'power2.inOut',
       });
 
-      // Animate new text in from bottom
-      gsap.from(button.querySelector('.button-text-overlay'), {
-        y: 50,
-        opacity: 0,
-        duration: 0.3,
-        ease: 'power2.inOut',
-      });
+      gsap.fromTo(
+        overlay,
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.3, ease: 'power2.inOut' }
+      );
     };
 
-    const handleMouseLeave = () => {
-      setIsHovering(false);
-
-      // Animate overlay text out downward
-      gsap.to(button.querySelector('.button-text-overlay'), {
-        y: 50,
+    const leave = () => {
+      gsap.to(overlay, {
+        y: 40,
         opacity: 0,
         duration: 0.3,
         ease: 'power2.inOut',
       });
 
-      // Animate original text back in
       gsap.to(textRef.current, {
         y: 0,
         opacity: 1,
@@ -64,53 +56,48 @@ export default function PremiumButton({
       });
     };
 
-    button.addEventListener('mouseenter', handleMouseEnter);
-    button.addEventListener('mouseleave', handleMouseLeave);
+    button.addEventListener('mouseenter', enter);
+    button.addEventListener('mouseleave', leave);
 
     return () => {
-      button.removeEventListener('mouseenter', handleMouseEnter);
-      button.removeEventListener('mouseleave', handleMouseLeave);
+      button.removeEventListener('mouseenter', enter);
+      button.removeEventListener('mouseleave', leave);
     };
   }, []);
 
-  const baseClasses = `relative px-8 py-4 bg-white text-black font-bold rounded-lg overflow-hidden transition-all hover:shadow-xl shadow-lg group ${className}`;
+  const baseClasses = `
+    relative z-20 bg-white text-black font-bold rounded-lg overflow-hidden 
+    transition-all hover:shadow-xl shadow-lg group ${className}
+  `;
 
-  const commonContent = (
-    <>
-      {/* Original Text */}
+  const ContentWrapper = (
+    <div className="relative w-full h-full  flex items-center justify-center"> 
+      {/* Default text */}
       <div ref={textRef} className="relative z-10 flex items-center gap-2">
         {children}
       </div>
 
-      {/* Overlay Text - Slides in from bottom */}
-      <div className="button-text-overlay absolute inset-0 flex items-center justify-center text-black font-bold opacity-0">
+      {/* Hover text */}
+      <div className="button-text-overlay absolute inset-0 flex items-center justify-center pointer-events-none font-bold opacity-0">
         <span className="flex items-center gap-2">
           {children}
           <span className="inline-block w-0.5 h-6 bg-black animate-blink ml-1" />
         </span>
       </div>
-    </>
+    </div>
   );
 
   if (href) {
     return (
-      <a
-        ref={buttonRef as React.Ref<HTMLAnchorElement>}
-        href={href}
-        className={baseClasses}
-      >
-        {commonContent}
+      <a ref={buttonRef as any} href={href} className={baseClasses}>
+        {ContentWrapper}
       </a>
     );
   }
 
   return (
-    <button
-      ref={buttonRef as React.Ref<HTMLButtonElement>}
-      onClick={onClick}
-      className={baseClasses}
-    >
-      {commonContent}
+    <button ref={buttonRef as any} onClick={onClick} className={baseClasses}>
+      {ContentWrapper}
     </button>
   );
 }
