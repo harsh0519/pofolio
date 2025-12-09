@@ -69,20 +69,6 @@ export async function GET(req: NextRequest) {
   const refreshToken = tokenData.refresh_token;
   const expiresIn = tokenData.expires_in || 3600;
 
-  // Store refresh token persistently for auto-refresh
-  if (refreshToken) {
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/spotify/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refreshToken }),
-      });
-      console.log('🎵 Spotify Callback - Refresh token stored persistently');
-    } catch (err) {
-      console.log('🎵 Spotify Callback - Failed to store persistent refresh token:', err);
-    }
-  }
-
   const debug = url.searchParams.get('debug');
 
   // cookie options: make explicit sameSite and secure so cookies are visible in dev
@@ -90,6 +76,15 @@ export async function GET(req: NextRequest) {
     httpOnly: true,
     path: '/',
     maxAge: expiresIn,
+    sameSite: 'lax' as const,
+    secure: process.env.NODE_ENV === 'production',
+  };
+
+  // refresh token cookie options - long expiry (6 months)
+  const refreshCookieOptions = {
+    httpOnly: true,
+    path: '/',
+    maxAge: 60 * 60 * 24 * 180, // 6 months
     sameSite: 'lax' as const,
     secure: process.env.NODE_ENV === 'production',
   };
@@ -107,8 +102,8 @@ export async function GET(req: NextRequest) {
   const res = NextResponse.redirect(process.env.NEXT_PUBLIC_BASE_URL || '/');
   res.cookies.set('spotify_access_token', accessToken, cookieOptions);
   if (refreshToken) {
-    // refresh tokens are long lived; set a long expiry (30 days)
-    res.cookies.set('spotify_refresh_token', refreshToken, { ...cookieOptions, maxAge: 60 * 60 * 24 * 30 });
+    // refresh tokens are long lived; set a very long expiry (6 months)
+    res.cookies.set('spotify_refresh_token', refreshToken, refreshCookieOptions);
   }
   // clear state
   res.cookies.delete('spotify_auth_state');

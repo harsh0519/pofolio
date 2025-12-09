@@ -85,6 +85,33 @@ export default function SpotifyShowcase() {
     try {
       const res = await fetch('/api/spotify/me');
 
+      if (res.status === 401) {
+        const errorData = await res.json().catch(() => ({}));
+
+        if (errorData.error === 'no_tokens') {
+          // No tokens available - automatically start OAuth flow
+          console.log('🎵 No tokens found, starting automatic OAuth flow');
+          setLoading(true);
+          // Redirect to Spotify auth - this will happen automatically
+          window.location.href = '/api/spotify/auth';
+          return;
+        } else if (errorData.error === 'token_expired') {
+          // Tokens expired - try refresh
+          const refreshRes = await fetch('/api/spotify/refresh');
+          if (refreshRes.ok) {
+            // Retry after refresh
+            setTimeout(fetchMe, 1000);
+            return;
+          } else {
+            // Refresh failed - clear cookies and restart OAuth
+            document.cookie = 'spotify_access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.cookie = 'spotify_refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            window.location.href = '/api/spotify/auth';
+            return;
+          }
+        }
+      }
+
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
         setError(json?.error || 'Failed to load');
@@ -131,9 +158,21 @@ export default function SpotifyShowcase() {
         setProfile(data.profile ?? null);
         setConnected(true);
         console.log('🎵 fetchCurrentPlaying: Connected set to true');
+      } else if (res.status === 401) {
+        console.log('🎵 fetchCurrentPlaying: 401 - trying refresh');
+        // Try to refresh token
+        const refreshRes = await fetch('/api/spotify/refresh');
+        console.log('🎵 fetchCurrentPlaying: Refresh response:', refreshRes.status);
+        if (refreshRes.ok) {
+          // Retry after refresh
+          setTimeout(fetchCurrentPlaying, 1000);
+        } else {
+          setConnected(false);
+          console.log('🎵 fetchCurrentPlaying: Refresh failed');
+        }
       } else {
         setConnected(false);
-        console.log('🎵 fetchCurrentPlaying: Error status:', res.status);
+        console.log('🎵 fetchCurrentPlaying: Other error status:', res.status);
       }
     } catch (err) {
       console.log('🎵 fetchCurrentPlaying: Error:', err);
@@ -146,6 +185,24 @@ export default function SpotifyShowcase() {
   async function fetchTop() {
     try {
       const res = await fetch('/api/spotify/top');
+
+      if (res.status === 401) {
+        const errorData = await res.json().catch(() => ({}));
+
+        if (errorData.error === 'no_tokens') {
+          // OAuth will be triggered by fetchMe, so just return
+          return;
+        } else if (errorData.error === 'token_expired') {
+          // Try to refresh token
+          const refreshRes = await fetch('/api/spotify/refresh');
+          if (refreshRes.ok) {
+            // Retry after refresh
+            setTimeout(fetchTop, 1000);
+            return;
+          }
+        }
+      }
+
       if (!res.ok) return;
       const data = await res.json();
       setTopArtists(data.artists ?? []);
@@ -663,16 +720,11 @@ export default function SpotifyShowcase() {
           <div className="text-center px-6">
             <div className="text-6xl mb-4">🎧</div>
             <h3 className="text-2xl font-bold text-white mb-2">Live Spotify Showcase</h3>
-            <p className="text-gray-400 mb-4">Portfolio owner: Connect your Spotify to show live music activity</p>
-            <div className="mb-4 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
-              <p className="text-red-400 text-sm">⚠️ Authentication required for live data</p>
+            <p className="text-gray-400 mb-4">Portfolio owner: Authentication happens automatically</p>
+            <div className="mb-4 p-3 bg-blue-500/20 border border-blue-400/30 rounded-lg">
+              <p className="text-blue-400 text-sm">🔄 Redirecting to Spotify for authentication...</p>
             </div>
-            <button
-              onClick={() => window.location.href = '/api/spotify/auth'}
-              className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-full transition-all"
-            >
-              Connect Spotify
-            </button>
+            <div className="animate-spin w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full mx-auto"></div>
           </div>
         </motion.div>
       )}

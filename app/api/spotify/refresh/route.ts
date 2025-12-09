@@ -1,11 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 
-// Store refresh token persistently (in production, use a database)
-let persistentRefreshToken: string | null = null;
-
 export async function GET(req: NextRequest) {
-  // If we have a persistent refresh token, use it
-  const refreshToken = persistentRefreshToken || req.cookies.get('spotify_refresh_token')?.value;
+  const refreshToken = req.cookies.get('spotify_refresh_token')?.value;
 
   if (!refreshToken) {
     return NextResponse.json({ error: 'No refresh token' }, { status: 401 });
@@ -38,27 +34,28 @@ export async function GET(req: NextRequest) {
   const accessToken = tokenData.access_token;
   const expiresIn = tokenData.expires_in || 3600;
 
-  // Store new refresh token if provided
-  if (tokenData.refresh_token) {
-    persistentRefreshToken = tokenData.refresh_token;
-  }
+  // Store new refresh token if provided (Spotify sometimes provides new refresh tokens)
+  const newRefreshToken = tokenData.refresh_token;
 
   const res = NextResponse.json({ ok: true, expiresIn });
-  res.cookies.set('spotify_access_token', accessToken, { httpOnly: true, path: '/', maxAge: expiresIn });
-  return res;
-}
+  res.cookies.set('spotify_access_token', accessToken, {
+    httpOnly: true,
+    path: '/',
+    maxAge: expiresIn,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production'
+  });
 
-// POST endpoint to set persistent refresh token (for initial setup)
-export async function POST(req: NextRequest) {
-  try {
-    const { refreshToken } = await req.json();
-    if (!refreshToken) {
-      return NextResponse.json({ error: 'No refresh token provided' }, { status: 400 });
-    }
-
-    persistentRefreshToken = refreshToken;
-    return NextResponse.json({ success: true, message: 'Refresh token stored persistently' });
-  } catch (err) {
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  // If we got a new refresh token, update the cookie with a very long expiry (6 months)
+  if (newRefreshToken) {
+    res.cookies.set('spotify_refresh_token', newRefreshToken, {
+      httpOnly: true,
+      path: '/',
+      maxAge: 60 * 60 * 24 * 180, // 6 months
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    });
   }
+
+  return res;
 }
