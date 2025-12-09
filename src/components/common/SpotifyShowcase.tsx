@@ -398,24 +398,24 @@ export default function SpotifyShowcase() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
         {/* Left Side - Top Tracks */}
-        {connected && topTracks.length > 0 && (
+        {topTracks.length > 0 && (
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="space-y-4"
           >
-            <h3 className="text-xl font-bold text-white mb-4">Your Top Tracks</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Top Tracks</h3>
             {topTracks.slice(0, 5).map((track: any, index: number) => (
               <motion.div
-                key={track.id}
+                key={track.id || index}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
                 whileHover={{ x: 8, scale: 1.02 }}
-                className="group flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 
-                         hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer"
-                onClick={() => handlePlayTrack(track.uri)}
+                className={`group flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 
+                         hover:bg-white/10 hover:border-white/20 transition-all ${connected ? 'cursor-pointer' : ''}`}
+                onClick={connected ? () => handlePlayTrack(track.uri) : undefined}
               >
                 {/* Track number */}
                 <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 border border-green-400/30 
@@ -446,14 +446,16 @@ export default function SpotifyShowcase() {
                   </p>
                 </div>
 
-                {/* Play indicator */}
-                <motion.div
-                  whileHover={{ scale: 1.2 }}
-                  className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 border border-green-400/30 
-                           flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <span className="text-green-400 text-xs">▶</span>
-                </motion.div>
+                {/* Play indicator - only show when connected */}
+                {connected && (
+                  <motion.div
+                    whileHover={{ scale: 1.2 }}
+                    className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 border border-green-400/30 
+                             flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <span className="text-green-400 text-xs">▶</span>
+                  </motion.div>
+                )}
               </motion.div>
             ))}
           </motion.div>
@@ -644,63 +646,53 @@ export default function SpotifyShowcase() {
         </div>
       </motion.div>
 
-        {/* Right Side - More Top Tracks */}
-        {connected && topTracks.length > 5 && (
+        {/* Right Side - Top Artists */}
+        {topArtists.length > 0 && (
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="space-y-4"
           >
-            <h3 className="text-xl font-bold text-white mb-4">More Favorites</h3>
-            {topTracks.slice(5, 10).map((track: any, index: number) => (
+            <h3 className="text-xl font-bold text-white mb-4">Top Artists</h3>
+            {topArtists.slice(0, 6).map((artist: any, index: number) => (
               <motion.div
-                key={track.id}
+                key={artist.id || index}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
                 whileHover={{ x: -8, scale: 1.02 }}
-                className="group flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 
-                         hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer"
-                onClick={() => handlePlayTrack(track.uri)}
+                className="group flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10
+                         hover:bg-white/10 hover:border-white/20 transition-all"
               >
-                {/* Track number */}
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 border border-green-400/30 
+                {/* Artist rank */}
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 border border-green-400/30
                               flex items-center justify-center text-xs font-bold text-green-400">
-                  {index + 6}
+                  {index + 1}
                 </div>
 
-                {/* Album art */}
+                {/* Artist image */}
                 <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-white/20">
-                  {track.album?.images?.[2] && (
+                  {artist.images?.[2] && (
                     <Image
-                      src={track.album.images[2].url}
+                      src={artist.images[2].url}
                       width={40}
                       height={40}
-                      alt={track.name}
+                      alt={artist.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                     />
                   )}
                 </div>
 
-                {/* Track info */}
+                {/* Artist info */}
                 <div className="flex-1 min-w-0">
                   <h4 className="text-white font-medium text-sm truncate group-hover:text-green-400 transition-colors">
-                    {track.name}
+                    {artist.name}
                   </h4>
-                  <p className="text-gray-400 text-xs truncate">
-                    {track.artists?.map((a: any) => a.name).join(', ')}
+                  <p className="text-gray-400 text-xs">
+                    {artist.genres?.slice(0, 2).join(', ') || 'Artist'}
                   </p>
                 </div>
-
-                {/* Play indicator */}
-                <motion.div
-                  whileHover={{ scale: 1.2 }}
-                  className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 border border-green-400/30 
-                           flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <span className="text-green-400 text-xs">▶</span>
-                </motion.div>
               </motion.div>
             ))}
           </motion.div>
@@ -709,7 +701,7 @@ export default function SpotifyShowcase() {
       </div>
 
       {/* Empty State - Show when no data available */}
-      {!connected && !now && topTracks.length === 0 && (
+      {!connected && !now && topTracks.length === 0 && topArtists.length === 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
