@@ -124,22 +124,37 @@ export default function SpotifyShowcase() {
 
   // Separate function for live current playing updates
   async function fetchCurrentPlaying() {
+    console.log('🎵 fetchCurrentPlaying: Starting...');
     try {
       const res = await fetch('/api/spotify/me');
+      console.log('🎵 fetchCurrentPlaying: Response status:', res.status);
+
       if (res.ok) {
         const data = await res.json();
+        console.log('🎵 fetchCurrentPlaying: Data received:', data);
         setNow(data.now ?? null);
         setProfile(data.profile ?? null);
         setConnected(true);
+        console.log('🎵 fetchCurrentPlaying: Connected set to true');
       } else if (res.status === 401) {
+        console.log('🎵 fetchCurrentPlaying: 401 - trying refresh');
         // Try to refresh token
         const refreshRes = await fetch('/api/spotify/refresh');
+        console.log('🎵 fetchCurrentPlaying: Refresh response:', refreshRes.status);
         if (refreshRes.ok) {
           // Retry after refresh
           setTimeout(fetchCurrentPlaying, 1000);
+        } else {
+          setConnected(false);
+          console.log('🎵 fetchCurrentPlaying: Refresh failed');
         }
+      } else {
+        setConnected(false);
+        console.log('🎵 fetchCurrentPlaying: Other error status:', res.status);
       }
     } catch (err) {
+      console.log('🎵 fetchCurrentPlaying: Error:', err);
+      setConnected(false);
       // Silently fail for live updates
     }
   }
@@ -683,18 +698,25 @@ export default function SpotifyShowcase() {
       )}
 
       {/* Live Status Indicator */}
-      {connected && (
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="absolute top-4 right-4 z-20"
-        >
-          <div className="flex items-center gap-2 bg-green-500/20 border border-green-400/30 rounded-full px-3 py-1">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-green-400 text-sm font-medium">Live</span>
-          </div>
-        </motion.div>
-      )}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="absolute top-4 right-4 z-20 flex items-center gap-2"
+      >
+        <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+          connected
+            ? 'bg-green-500/20 border border-green-400/30 text-green-400'
+            : 'bg-red-500/20 border border-red-400/30 text-red-400'
+        }`}>
+          <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
+          <span>{connected ? 'Live' : 'Demo'}</span>
+        </div>
+
+        {/* Debug Info */}
+        <div className="text-xs text-gray-500 bg-black/50 px-2 py-1 rounded">
+          Now: {now ? '✅' : '❌'} | Profile: {profile ? '✅' : '❌'}
+        </div>
+      </motion.div>
     </div>
   );
 
