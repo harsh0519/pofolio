@@ -89,11 +89,10 @@ export default function SpotifyShowcase() {
         const errorData = await res.json().catch(() => ({}));
 
         if (errorData.error === 'no_tokens') {
-          // No tokens available - automatically start OAuth flow
-          console.log('🎵 No tokens found, starting automatic OAuth flow');
-          setLoading(true);
-          // Redirect to Spotify auth - this will happen automatically
-          window.location.href = '/api/spotify/auth';
+          // No tokens available - show demo mode instead of redirecting
+          console.log('🎵 No tokens found, showing demo mode');
+          setConnected(false);
+          setLoading(false);
           return;
         } else if (errorData.error === 'token_expired') {
           // Tokens expired - try refresh
@@ -103,10 +102,9 @@ export default function SpotifyShowcase() {
             setTimeout(fetchMe, 1000);
             return;
           } else {
-            // Refresh failed - clear cookies and restart OAuth
-            document.cookie = 'spotify_access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            document.cookie = 'spotify_refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            window.location.href = '/api/spotify/auth';
+            // Refresh failed - fall back to demo mode
+            setConnected(false);
+            setLoading(false);
             return;
           }
         }
@@ -123,7 +121,7 @@ export default function SpotifyShowcase() {
       const data = await res.json();
       setProfile(data.profile ?? null);
       setNow(data.now ?? null);
-      setConnected(true);
+      setConnected(!data.cached); // Show as connected if it's live data, demo if cached
     } catch (err: any) {
       setError(err.message || String(err));
       setConnected(false);
@@ -720,11 +718,16 @@ export default function SpotifyShowcase() {
           <div className="text-center px-6">
             <div className="text-6xl mb-4">🎧</div>
             <h3 className="text-2xl font-bold text-white mb-2">Live Spotify Showcase</h3>
-            <p className="text-gray-400 mb-4">Portfolio owner: Authentication happens automatically</p>
+            <p className="text-gray-400 mb-4">Portfolio owner's live music activity</p>
             <div className="mb-4 p-3 bg-blue-500/20 border border-blue-400/30 rounded-lg">
-              <p className="text-blue-400 text-sm">🔄 Redirecting to Spotify for authentication...</p>
+              <p className="text-blue-400 text-sm">🎵 Portfolio Owner: Click below to connect your Spotify and show live data to all visitors</p>
             </div>
-            <div className="animate-spin w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full mx-auto"></div>
+            <button
+              onClick={() => window.location.href = '/api/spotify/auth'}
+              className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-full transition-all"
+            >
+              Setup Live Spotify
+            </button>
           </div>
         </motion.div>
       )}

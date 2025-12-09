@@ -1,9 +1,31 @@
 import { NextResponse, NextRequest } from 'next/server';
 
+// Cache for owner's data (in production, use Redis or similar)
+let cachedOwnerData: { profile: any; now: any; lastUpdated: number } | null = null;
+const CACHE_DURATION = 30 * 1000; // 30 seconds
+
 export async function GET(req: NextRequest) {
   const accessToken = req.cookies.get('spotify_access_token')?.value;
 
+  // If we have cached owner data and it's recent, return it for all visitors
+  if (cachedOwnerData && (Date.now() - cachedOwnerData.lastUpdated) < CACHE_DURATION) {
+    return NextResponse.json({
+      profile: cachedOwnerData.profile,
+      now: cachedOwnerData.now,
+      cached: true
+    });
+  }
+
+  // Try to use owner's tokens if available
   if (!accessToken) {
+    // Check if we have cached data to show to visitors
+    if (cachedOwnerData) {
+      return NextResponse.json({
+        profile: cachedOwnerData.profile,
+        now: cachedOwnerData.now,
+        cached: true
+      });
+    }
     return NextResponse.json({ error: 'no_tokens' }, { status: 401 });
   }
 
@@ -13,6 +35,14 @@ export async function GET(req: NextRequest) {
   });
 
   if (profileRes.status === 401) {
+    // If owner's tokens expired, try to use cached data
+    if (cachedOwnerData) {
+      return NextResponse.json({
+        profile: cachedOwnerData.profile,
+        now: cachedOwnerData.now,
+        cached: true
+      });
+    }
     return NextResponse.json({ error: 'token_expired' }, { status: 401 });
   }
 
@@ -32,6 +62,13 @@ export async function GET(req: NextRequest) {
   if (nowRes.status === 200) {
     now = await nowRes.json();
   }
+
+  // Cache the data for other visitors
+  cachedOwnerData = {
+    profile,
+    now,
+    lastUpdated: Date.now()
+  };
 
   return NextResponse.json({ profile, now });
 }
