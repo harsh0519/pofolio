@@ -1,13 +1,12 @@
 import { NextResponse, NextRequest } from 'next/server';
+import { getValidAccessToken } from '@/lib/spotify-auth';
 
 // Cache for owner's top data
 let cachedTopData: { artists: any[]; tracks: any[]; lastUpdated: number } | null = null;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour (top data doesn't change often)
 
 export async function GET(req: NextRequest) {
-  const accessToken = req.cookies.get('spotify_access_token')?.value;
-
-  // If we have cached top data and it's recent, return it for all visitors
+  // If we have cached top data and it's recent, return it immediately
   if (cachedTopData && (Date.now() - cachedTopData.lastUpdated) < CACHE_DURATION) {
     return NextResponse.json({
       artists: cachedTopData.artists,
@@ -16,9 +15,10 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  // Try to use owner's tokens if available
+  const accessToken = await getValidAccessToken(req);
+
+  // If still no token, return cached data or error
   if (!accessToken) {
-    // Check if we have cached data to show to visitors
     if (cachedTopData) {
       return NextResponse.json({
         artists: cachedTopData.artists,
@@ -26,18 +26,21 @@ export async function GET(req: NextRequest) {
         cached: true
       });
     }
-    // Return 401 error instead of demo data - only show real data
     return NextResponse.json({ error: 'no_tokens' }, { status: 401 });
   }
 
   try {
     const [artistsRes, tracksRes] = await Promise.all([
-      fetch('https://api.spotify.com/v1/me/top/artists?limit=6', { headers: { Authorization: `Bearer ${accessToken}` } }),
-      fetch('https://api.spotify.com/v1/me/top/tracks?limit=8', { headers: { Authorization: `Bearer ${accessToken}` } }),
+      fetch('https://api.spotify.com/v1/me/top/artists?limit=6', {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      }),
+      fetch('https://api.spotify.com/v1/me/top/tracks?limit=8', {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      }),
     ]);
 
+    // If token is expired, return cached data
     if (artistsRes.status === 401 || tracksRes.status === 401) {
-      // If owner's tokens expired, try to use cached data
       if (cachedTopData) {
         return NextResponse.json({
           artists: cachedTopData.artists,
@@ -45,7 +48,6 @@ export async function GET(req: NextRequest) {
           cached: true
         });
       }
-      // Return 401 error instead of demo data - only show real data
       return NextResponse.json({ error: 'token_expired' }, { status: 401 });
     }
 
@@ -58,14 +60,17 @@ export async function GET(req: NextRequest) {
     const artists = await artistsRes.json();
     const tracks = await tracksRes.json();
 
-    // Cache the data for other visitors
+    // Cache the data
     cachedTopData = {
       artists: artists.items ?? [],
       tracks: tracks.items ?? [],
       lastUpdated: Date.now()
     };
 
-    return NextResponse.json({ artists: artists.items ?? [], tracks: tracks.items ?? [] });
+    return NextResponse.json({
+      artists: artists.items ?? [],
+      tracks: tracks.items ?? []
+    });
   } catch (err) {
     return NextResponse.json({ error: 'Request failed', details: String(err) }, { status: 500 });
   }

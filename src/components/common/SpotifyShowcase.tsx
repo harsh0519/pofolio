@@ -85,34 +85,16 @@ export default function SpotifyShowcase() {
     try {
       const res = await fetch('/api/spotify/me');
 
-      if (res.status === 401) {
+      if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-
-        if (errorData.error === 'no_tokens') {
-          // No tokens available - show demo mode instead of redirecting
+        if (res.status === 401 && errorData.error === 'no_tokens') {
+          // No tokens available - show demo mode
           console.log('🎵 No tokens found, showing demo mode');
           setConnected(false);
           setLoading(false);
           return;
-        } else if (errorData.error === 'token_expired') {
-          // Tokens expired - try refresh
-          const refreshRes = await fetch('/api/spotify/refresh');
-          if (refreshRes.ok) {
-            // Retry after refresh
-            setTimeout(fetchMe, 1000);
-            return;
-          } else {
-            // Refresh failed - fall back to demo mode
-            setConnected(false);
-            setLoading(false);
-            return;
-          }
         }
-      }
-
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({}));
-        setError(json?.error || 'Failed to load');
+        setError(errorData?.error || 'Failed to load');
         setConnected(false);
         setLoading(false);
         return;
@@ -184,29 +166,17 @@ export default function SpotifyShowcase() {
     try {
       const res = await fetch('/api/spotify/top');
 
-      if (res.status === 401) {
-        const errorData = await res.json().catch(() => ({}));
-
-        if (errorData.error === 'no_tokens') {
-          // OAuth will be triggered by fetchMe, so just return
-          return;
-        } else if (errorData.error === 'token_expired') {
-          // Try to refresh token
-          const refreshRes = await fetch('/api/spotify/refresh');
-          if (refreshRes.ok) {
-            // Retry after refresh
-            setTimeout(fetchTop, 1000);
-            return;
-          }
-        }
+      if (!res.ok) {
+        // API handles token refresh internally, so just log and return
+        console.log('Failed to fetch top data:', res.status);
+        return;
       }
 
-      if (!res.ok) return;
       const data = await res.json();
       setTopArtists(data.artists ?? []);
       setTopTracks(data.tracks ?? []);
     } catch (e) {
-      // ignore
+      console.log('Error fetching top data:', e);
     }
   }
 
