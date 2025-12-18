@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FiAward, FiCode, FiZap, FiHeart } from 'react-icons/fi';
+import { FiCode, FiServer, FiShield, FiLayout } from 'react-icons/fi';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -11,42 +11,51 @@ if (typeof window !== 'undefined') {
 
 const skills = [
   { name: 'Frontend Development', level: 95, icon: FiCode },
-  { name: '3D & WebGL', level: 90, icon: FiZap },
-  { name: 'GSAP Animations', level: 92, icon: FiAward },
-  { name: 'UI/UX Design', level: 88, icon: FiHeart },
+  { name: 'Backend Development', level: 90, icon: FiServer },
+  { name: 'Networking & Security', level: 62, icon: FiShield },
+  { name: 'UI/UX Design', level: 78, icon: FiLayout },
 ];
 
 const timeline = [
   {
-    year: '2024',
-    title: 'Senior Creative Developer',
-    company: ' Agency',
-    description: 'Leading frontend development for high-profile clients',
+    year: 'April 2025 – Present',
+    title: 'Full-Stack Developer (Angular)',
+    company: 'AGBE India',
+    description: 'Developing and maintaining e-commerce admin & CMS platforms with Angular, Node.js, and MongoDB.',
   },
   {
-    year: '2022',
-    title: 'Frontend Developer',
-    company: 'Tech Startup',
-    description: 'Built scalable web applications with modern frameworks',
+    year: 'January 2024 – March 2025',
+    title: 'Full-Stack Developer (Next.js)',
+    company: 'Cosmoon Media',
+    description: 'Built a production-ready travel booking platform using Next.js and Sanity CMS.',
   },
   {
-    year: '2020',
-    title: 'Junior Developer',
-    company: 'Digital Agency',
-    description: 'Developed responsive websites and learned best practices',
+    year: 'August 2023 – October 2023',
+    title: 'Designer Intern (Canva & Figma)',
+    company: 'BrandLadder',
+    description: 'Designed marketing posters, social media creatives, and UI layouts using Figma and Canva.',
   },
   {
-    year: '2019',
-    title: 'Started Journey',
-    company: 'Self-taught',
-    description: 'Began learning web development and design',
+    year: '2021–2023',
+    title: 'Freelance Web Developer',
+    company: 'Self-Employed',
+    description: 'Delivered responsive websites and web apps using React, Next.js, and modern UI/UX practices.',
+  },
+  {
+    year: '2019-Present',
+    title: 'Self-Learning',
+    company: 'Independent',
+    description: 'Learning Never Stops! Continuously enhancing skills in web development, 3D design, and modern frameworks.',
   },
 ];
+
 
 export default function AboutPage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const skillsRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [displayText, setDisplayText] = useState(["H"]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -120,40 +129,155 @@ export default function AboutPage() {
       });
     }, heroRef);
 
-    return () => ctx.revert();
+    // Particle background animation
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx2d = canvas.getContext('2d');
+    if (!ctx2d) return;
+
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const particles: Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      size: number;
+    }> = [];
+
+    for (let i = 0; i < 500; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 2 + 1,
+      });
+    }
+
+    let animationId: number;
+
+    const animate = () => {
+      ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((particle) => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+
+        ctx2d.beginPath();
+        ctx2d.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx2d.fillStyle = 'rgba(255, 255, 255, 0.5)'; // White
+        ctx2d.fill();
+      });
+
+      // Draw connections
+      particles.forEach((p1, i) => {
+        particles.slice(i + 1).forEach((p2) => {
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 100) {
+            ctx2d.beginPath();
+            ctx2d.moveTo(p1.x, p1.y);
+            ctx2d.lineTo(p2.x, p2.y);
+            ctx2d.strokeStyle = `rgba(255, 255, 255, ${1 - distance / 100})`; // White
+            ctx2d.lineWidth = 0.5;
+            ctx2d.stroke();
+          }
+        });
+      });
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    // Continuous typewriter animation for HARSH, keeping H always visible
+    const fullWord = 'HARSH';
+    let currentIndex = 1; // Start with H already visible
+    let isTyping = true;
+    let pauseCounter = 0;
+    let typewriterId: any;
+
+    const typewriter = () => {
+      if (pauseCounter > 0) {
+        pauseCounter--;
+        return;
+      }
+
+      if (isTyping) {
+        if (currentIndex < fullWord.length) {
+          const newText = fullWord.slice(0, currentIndex + 1);
+          setDisplayText(newText.split(''));
+          currentIndex++;
+        } else {
+          isTyping = false;
+          pauseCounter = 5;
+        }
+      } else {
+        if (currentIndex > 1) { 
+          const newText = fullWord.slice(0, currentIndex - 1);
+          setDisplayText(newText.split(''));
+          currentIndex--;
+        } else {
+          isTyping = true;
+          pauseCounter = 3;
+        }
+      }
+    };
+
+    typewriterId = setInterval(typewriter, 100);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      clearInterval(typewriterId);
+    };
   }, []);
 
   return (
-    <main ref={heroRef} className="pt-20 bg-gradient-to-b from-[#0A0A0F] via-[#13131A] to-[#1C1C24]">
-      {/* Hero Section */}
+    <main ref={heroRef} className="pt-20 relative bg-gradient-to-b from-[#0A0A0F] via-[#13131A] to-[#1C1C24] overflow-hidden">
       <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
-          <div className="parallax-text text-[20vw] font-bold text-white/5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">
-            CREATIVE DEVELOPER
-          </div>
+
         </div>
 
-        <div className="container mx-auto px-6 relative z-10 flex items-center justify-center w-full">
+        <div className="container mx-auto px-6 relative z-9999 flex items-center justify-center w-auto">
           <div className="about-hero max-w-4xl text-center">
             <h1 className="text-6xl md:text-8xl font-bold mb-8 text-white">
-              Hi, I'm <span className="text-white">Your Name</span>
+              Hi, I'm <span
+                className="
+    inline-block
+    font-mono
+    tracking-widest
+    text-white
+    drop-shadow-[0_0_14px_rgba(255,255,255,0.6)]
+  "
+                style={{
+                  width: '5ch',      // EXACT length of HARSH
+                  textAlign: 'left'
+                }}
+              >
+                {displayText.join('')}
+              </span>
+
             </h1>
             <p className="text-2xl md:text-3xl text-gray-400 mb-8 leading-relaxed">
-              A creative developer passionate about pushing the boundaries of web design with
-              stunning 3D animations, immersive interactions, and pixel-perfect execution.
+              Full-Stack Engineer skilled in React.js & Next.js, building responsive, high-performance UIs with modern UI/UX, Tailwind CSS, and animations using GSAP/Framer Motion. Experienced in REST APIs, state management, Git, and Agile workflows.
             </p>
             <div className="flex flex-wrap gap-6 text-lg justify-center">
               <div>
-                <div className="text-5xl font-bold text-white mb-2">5+</div>
+                <div className="text-5xl font-bold text-white mb-2">2.5+</div>
                 <div className="text-gray-400">Years Experience</div>
               </div>
               <div>
-                <div className="text-5xl font-bold text-[#8B5CF6] mb-2">50+</div>
+                <div className="text-5xl font-bold text-[#8B5CF6] mb-2">20+</div>
                 <div className="text-gray-400">Projects Completed</div>
-              </div>
-              <div>
-                <div className="text-5xl font-bold text-[#8B5CF6] mb-2">10+</div>
-                <div className="text-gray-400">Awards Won</div>
               </div>
             </div>
           </div>
@@ -171,7 +295,7 @@ export default function AboutPage() {
             {skills.map((skill, i) => (
               <div key={i} className="skill-item">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-white to-gray-200 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-linear-to-br from-white to-gray-200 rounded-lg flex items-center justify-center">
                     <skill.icon className="w-6 h-6 text-black" />
                   </div>
                   <div className="flex-1">
@@ -207,17 +331,15 @@ export default function AboutPage() {
             {timeline.map((item, i) => (
               <div
                 key={i}
-                className={`timeline-item relative mb-16 md:mb-24 ${
-                  i % 2 === 0 ? 'md:text-right md:pr-[50%]' : 'md:pl-[50%]'
-                }`}
+                className={`timeline-item relative mb-16 md:mb-24 ${i % 2 === 0 ? 'md:text-right md:pr-[50%]' : 'md:pl-[50%]'
+                  }`}
               >
                 {/* Timeline dot */}
                 <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full hidden md:block" />
 
                 <div
-                  className={`bg-gradient-to-br from-white/5 to-white/0 border border-white/10 rounded-2xl p-8 hover:border-white/50 transition-all ${
-                    i % 2 === 0 ? 'md:mr-12' : 'md:ml-12'
-                  }`}
+                  className={`bg-linear-to-br from-white/5 to-white/0 border border-white/10 rounded-2xl p-8 hover:border-white/50 transition-all ${i % 2 === 0 ? 'md:mr-12' : 'md:ml-12'
+                    }`}
                 >
                   <div className="text-white text-2xl font-bold mb-2">{item.year}</div>
                   <h3 className="text-2xl font-bold text-white mb-2">{item.title}</h3>
@@ -231,7 +353,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 bg-gradient-to-b from-transparent to-black/50">
+      <section className="py-32 bg-linear-to-b from-transparent to-black/50">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-5xl md:text-7xl font-bold mb-8 text-white">
             Let's Work <span className="text-white">Together</span>
@@ -247,6 +369,11 @@ export default function AboutPage() {
           </a>
         </div>
       </section>
+      {/* Particle background */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full opacity-50 pointer-events-none"
+      />
     </main>
   );
 }
