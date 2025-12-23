@@ -9,6 +9,8 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+import ResumePreview from '@/components/common/ResumePreview';
+
 const skills = [
   { name: 'Frontend Development', level: 95, icon: FiCode },
   { name: 'Backend Development', level: 90, icon: FiServer },
@@ -279,6 +281,9 @@ export default function AboutPage() {
                 <div className="text-5xl font-bold text-[#8B5CF6] mb-2">20+</div>
                 <div className="text-gray-400">Projects Completed</div>
               </div>
+            </div>
+            <div className="mt-8 flex justify-center">
+              <ResumePreview />
             </div>
           </div>
         </div>

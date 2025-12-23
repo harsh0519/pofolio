@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { FiMail, FiMapPin, FiPhone, FiGithub, FiLinkedin, FiTwitter } from 'react-icons/fi';
+import emailjs from '@emailjs/browser';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -10,10 +11,17 @@ export default function ContactPage() {
     email: '',
     subject: '',
     message: '',
+    phone: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
 
   const formRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const emailFormRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -112,9 +120,54 @@ export default function ContactPage() {
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setIsSubmitting(true);
+    setSubmitStatus({ type: null, message: '' });
+
+    try {
+      if (!emailFormRef.current) {
+        throw new Error('Form reference not found');
+      }
+
+      // EmailJS configuration from environment variables
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+      if (!serviceId || !templateId || !publicKey) {
+        throw new Error('EmailJS configuration is missing');
+      }
+
+      await emailjs.sendForm(
+        serviceId,
+        templateId,
+        emailFormRef.current,
+        publicKey
+      );
+
+      setSubmitStatus({
+        type: 'success',
+        message: 'Message sent successfully! I\'ll get back to you soon.',
+      });
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        phone : '',
+        message: '',
+      });
+    } catch (error) {
+      console.error('Email send error:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'Failed to send message. Please try again or email me directly.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -149,7 +202,7 @@ export default function ContactPage() {
           <div className="grid lg:grid-cols-2 gap-16 max-w-6xl mx-auto">
             {/* Contact Form */}
             <div className="contact-form">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form ref={emailFormRef} onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-semibold mb-2">
                     Your Name
@@ -163,6 +216,20 @@ export default function ContactPage() {
                     required
                     className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-xl focus:border-white focus:outline-none transition-colors"
                     placeholder="John Doe"
+                  />
+                </div>
+                  <div>
+                  <label htmlFor="name" className="block text-sm font-semibold mb-2">
+                    Phone
+                  </label>
+                  <input
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-xl focus:border-white focus:outline-none transition-colors"
+                    placeholder="+1 (234) 567-890"
                   />
                 </div>
 
@@ -214,11 +281,29 @@ export default function ContactPage() {
                   />
                 </div>
 
+                {/* Status Message */}
+                {submitStatus.type && (
+                  <div
+                    className={`p-4 rounded-xl ${
+                      submitStatus.type === 'success'
+                        ? 'bg-green-500/10 border border-green-500/50 text-green-400'
+                        : 'bg-red-500/10 border border-red-500/50 text-red-400'
+                    }`}
+                  >
+                    {submitStatus.message}
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full px-8 py-4 bg-white text-black font-bold text-lg rounded-xl hover:scale-105 transition-transform shadow-lg hover:shadow-xl"
+                  disabled={isSubmitting}
+                  className={`w-full px-8 py-4 bg-white text-black font-bold text-lg rounded-xl transition-all shadow-lg ${
+                    isSubmitting
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:scale-105 hover:shadow-xl'
+                  }`}
                 >
-                  Send Message
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             </div>
@@ -231,10 +316,10 @@ export default function ContactPage() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Email</h3>
                 <a
-                  href="mailto:hello@example.com"
+                  href="mailto:harshmehta0519@gmail.com"
                   className="text-gray-400 hover:text-white transition-colors"
                 >
-                  hello@example.com
+                  harshmehta0519@gmail.com
                 </a>
               </div>
 
@@ -243,7 +328,7 @@ export default function ContactPage() {
                   <FiMapPin className="w-6 h-6 text-black" />
                 </div>
                 <h3 className="text-xl font-bold mb-2">Location</h3>
-                <p className="text-gray-400">San Francisco, CA</p>
+                <p className="text-gray-400">Gurugram, India</p>
               </div>
 
               <div className="info-card bg-gradient-to-br from-white/5 to-white/0 border border-white/10 rounded-2xl p-8">
@@ -252,10 +337,10 @@ export default function ContactPage() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Phone</h3>
                 <a
-                  href="tel:+1234567890"
+                  href="tel:+917417730111"
                   className="text-gray-400 hover:text-white transition-colors"
                 >
-                  +1 (234) 567-890
+                  +91 74177 30111
                 </a>
               </div>
 
@@ -264,9 +349,8 @@ export default function ContactPage() {
                 <h3 className="text-xl font-bold mb-4">Connect with Me</h3>
                 <div className="flex gap-4">
                   {[
-                    { icon: FiGithub, href: 'https://github.com' },
-                    { icon: FiLinkedin, href: 'https://linkedin.com' },
-                    { icon: FiTwitter, href: 'https://twitter.com' },
+                    { icon: FiGithub, href: 'https://github.com/harsh0519' },
+                    { icon: FiLinkedin, href: 'https://www.linkedin.com/in/harsh-kumar-mehta-0a99632a4/' },
                   ].map((social, i) => (
                     <a
                       key={i}

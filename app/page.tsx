@@ -7,6 +7,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FiArrowRight, FiGithub, FiLinkedin, FiMail } from 'react-icons/fi';
 import { revealElements, createParallax, splitTextReveal } from '@/lib/animations';
+import ResumePreview from '@/components/common/ResumePreview';
 import PremiumButton from '@/components/common/PremiumButton';
 import SpotifyShowcase from '@/components/common/SpotifyShowcase';
 import SkillsSection from '@/components/common/SkillsSection';
@@ -142,10 +143,14 @@ export default function Home() {
           <div className="flex gap-6 justify-center items-center flex-wrap mt-6">
             <PremiumButton href="/projects" className='p-3 w-[250px]'>View Projects <FiArrowRight className="w-5 h-5" /></PremiumButton>
             <PremiumButton href="/contact" className='p-3 w-[250px]'>Get in Touch</PremiumButton>
+            <div ref={ctaRef} className="w-full flex justify-center">
+              <ResumePreview />
+            </div>
           </div>
 
           <div className="mt-16 flex gap-6 justify-center">
-            {[{ icon: FiGithub, href: 'https://github.com' }, { icon: FiLinkedin, href: 'https://linkedin.com' }, { icon: FiMail, href: 'mailto:hello@example.com' }].map((social, i) => (
+            {[{ icon: FiGithub, href: 'https://github.com/harsh0519' },
+            { icon: FiLinkedin, href: 'https://www.linkedin.com/in/harsh-kumar-mehta-0a99632a4/' }, { icon: FiMail, href: 'mailto:harshmehta0519@gmail.com' }].map((social, i) => (
               <a key={i} href={social.href} className="w-12 h-12 rounded-full flex items-center justify-center transition-transform hover:scale-110" target="_blank" rel="noopener noreferrer">
                 <span className="flex h-12 w-12 items-center justify-center rounded-full  to-transparent shadow-md text-white"><social.icon className="w-5 h-5" /></span>
               </a>

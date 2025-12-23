@@ -16,10 +16,9 @@ const navLinks = [
 ];
 
 const socialLinks = [
-  { icon: FiGithub, href: 'https://github.com', label: 'GitHub' },
-  { icon: FiLinkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-  { icon: FiTwitter, href: 'https://twitter.com', label: 'Twitter' },
-  { icon: FiMail, href: 'mailto:hello@example.com', label: 'Email' },
+  { icon: FiGithub, href: 'https://github.com/harsh0519', label: 'GitHub' },
+  { icon: FiLinkedin, href: 'https://www.linkedin.com/in/harsh-kumar-mehta-0a99632a4/', label: 'LinkedIn' },
+  { icon: FiMail, href: 'mailto:harshmehta0519@gmail.com', label: 'Email' },
 ];
 
 export default function GSAPNav() {
@@ -241,7 +240,7 @@ export default function GSAPNav() {
                     <Link
                       href={link.href}
                       onClick={handleNavClick}
-                      className={`block text-6xl md:text-7xl font-bold transition-all duration-300 hover:scale-105 ${pathname === link.href
+                      className={`block text-4xl md:text-5xl font-bold transition-all duration-300 hover:scale-105 ${pathname === link.href
                           ? 'text-white'
                           : 'text-gray-400 hover:text-white'
                         }`}
