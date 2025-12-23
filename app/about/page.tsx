@@ -241,7 +241,7 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <main ref={heroRef} className="pt-20 relative bg-gradient-to-b from-[#0A0A0F] via-[#13131A] to-[#1C1C24] overflow-hidden">
+    <main ref={heroRef} className="pt-20 relative bg-linear-to-b from-[#0A0A0F] via-[#13131A] to-[#1C1C24] overflow-hidden">
       <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
 

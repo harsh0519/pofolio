@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import CursorProvider from "@/components/common/CursorProvider";
-import SmoothScrollProvider from "@/providers/SmoothScrollProvider";
-import GSAPNav from "@/components/layout/GSAPNav";
-import PageTransation from "@/components/common/PageTransition";
-import LoadingScreen from "@/components/common/LoadingScreen";
-import BackgroundScene from "@/components/common/BackgroundScene";
+import ConditionalLayout from "@/components/layout/ConditionalLayout";
 
 export const metadata: Metadata = {
   title: "Harsh Kumar - Web Developer & 3D Enthusiast",
@@ -20,13 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="antialiased custom-cursor bg-black">
-        <BackgroundScene />
-        <LoadingScreen />
-        <SmoothScrollProvider>
-          <CursorProvider />
-          <GSAPNav />
-          <PageTransation>{children}</PageTransation>
-        </SmoothScrollProvider>
+        <ConditionalLayout>{children}</ConditionalLayout>
       </body>
     </html>
   );

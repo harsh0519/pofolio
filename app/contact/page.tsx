@@ -126,7 +126,7 @@ export default function ContactPage() {
   return (
     <main
       ref={formRef}
-      className="pt-20 bg-gradient-to-b from-[#0A0A0F] via-[#13131A] to-[#1C1C24] min-h-screen relative overflow-hidden"
+      className="pt-20 bg-linear-to-b from-[#0A0A0F] via-[#13131A] to-[#1C1C24] min-h-screen relative overflow-hidden"
     >
       {/* Particle background */}
       <canvas
