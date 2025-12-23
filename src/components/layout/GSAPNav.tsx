@@ -278,10 +278,10 @@ export default function GSAPNav() {
             <div className="contact-info text-center relative z-50 pointer-events-auto">
               <p className="text-gray-400 text-lg mb-3">Have a project?</p>
               <a
-                href="mailto:hello@example.com"
+                href="mailto:harshmehta0519@gmail.com"
                 className="text-2xl font-semibold text-white hover:text-gray-400 transition-colors pointer-events-auto"
               >
-                hello@example.com
+               harshmehta0519@gmail.com
               </a>
             </div>
           </div>
